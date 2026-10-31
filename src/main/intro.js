@@ -60,15 +60,15 @@ export function drawIntroCaptions(K, t) {
   const popS = 1 + 0.06 * (1 - easeOutBack(smoothstep(1.0, 1.35, t)));
   const cx = 960;
   if (a1 > 0) {
-    K.text({ text: '人类自古以来就痴迷于画鹈鹕骑自行车。', font: '"Songti SC", serif', weight: 600, size: 58, color: ink, align: 'center', letterSpacing: 2 }, cx, 372 - 12 * (1 - a1), 1, a1);
-    K.text({ text: 'Since time immemorial, humankind has been obsessed with drawing pelicans riding bicycles.', font: '"Baskerville", serif', style: 'italic', size: 27, color: ink, align: 'center' }, cx, 458 - 12 * (1 - a1), 1, a1 * 0.85);
+    K.text({ text: '风把一张画吹走了。', font: '"Songti SC", serif', weight: 600, size: 58, color: ink, align: 'center', letterSpacing: 2 }, cx, 372 - 12 * (1 - a1), 1, a1);
+    K.text({ text: 'The wind took a drawing, and something went after it.', font: '"Baskerville", serif', style: 'italic', size: 27, color: ink, align: 'center' }, cx, 458 - 12 * (1 - a1), 1, a1 * 0.85);
   }
   if (a2 > 0) {
     push();
     translate(cx, 590);
     scale(popS);
-    K.text({ text: '——早在自行车被发明之前。', font: '"Songti SC", serif', weight: 600, size: 52, color: ink, align: 'center', letterSpacing: 2 }, 0, -30, 1, a2);
-    K.text({ text: '— long before the bicycle was invented.', font: '"Baskerville", serif', style: 'italic', size: 27, color: ink, align: 'center' }, 0, 46, 1, a2 * 0.85);
+    K.text({ text: '——鹈鹕骑上自行车去追。', font: '"Songti SC", serif', weight: 600, size: 52, color: ink, align: 'center', letterSpacing: 2 }, 0, -30, 1, a2);
+    K.text({ text: '— so the pelican took the bicycle.', font: '"Baskerville", serif', style: 'italic', size: 27, color: ink, align: 'center' }, 0, 46, 1, a2 * 0.85);
     pop();
   }
 }

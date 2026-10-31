@@ -93,12 +93,12 @@ export function drawOutroCaptions(K, t) {
   const a1 = smoothstep(T_CAP1, T_CAP1 + 0.5, t) * (1 - smoothstep(T_PUSH0 - 0.15, T_PUSH0 + 0.35, t));
   const a2 = smoothstep(T_CAP2, T_CAP2 + 0.4, t);
   if (a1 > 0) {
-    K.text({ text: '截至目前，人类共提交了 20 份答卷。', font: '"Songti SC", serif', weight: 600, size: 44, color: ink, align: 'center', letterSpacing: 2 }, 960, 852 - 8 * (1 - a1), 1, a1);
-    K.text({ text: 'To date, humankind has handed in 20 answers.', font: '"Baskerville", serif', style: 'italic', size: 24, color: ink, align: 'center' }, 960, 910 - 8 * (1 - a1), 1, a1 * 0.8);
+    K.text({ text: '追了二十个时代，那张画终于落下来。', font: '"Songti SC", serif', weight: 600, size: 44, color: ink, align: 'center', letterSpacing: 2 }, 960, 852 - 8 * (1 - a1), 1, a1);
+    K.text({ text: 'Twenty eras later, the drawing comes down.', font: '"Baskerville", serif', style: 'italic', size: 24, color: ink, align: 'center' }, 960, 910 - 8 * (1 - a1), 1, a1 * 0.8);
   }
   if (a2 > 0) {
-    K.text({ text: '鹈鹕本人对此尚未发表评论。', font: '"Songti SC", serif', weight: 600, size: 44, color: ink, align: 'center', letterSpacing: 2 }, 960, 852 - 6 * (1 - a2), 1, a2);
-    K.text({ text: 'The pelican itself has yet to comment.', font: '"Baskerville", serif', style: 'italic', size: 24, color: ink, align: 'center' }, 960, 910 - 6 * (1 - a2), 1, a2 * 0.8);
+    K.text({ text: '画上画的，正是它自己。', font: '"Songti SC", serif', weight: 600, size: 44, color: ink, align: 'center', letterSpacing: 2 }, 960, 852 - 6 * (1 - a2), 1, a2);
+    K.text({ text: 'It is a drawing of the pelican.', font: '"Baskerville", serif', style: 'italic', size: 24, color: ink, align: 'center' }, 960, 910 - 6 * (1 - a2), 1, a2 * 0.8);
   }
 }
 
