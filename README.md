@@ -24,7 +24,20 @@
 
 ---
 
-## 目录
+## 从这里开始
+
+| 你想做什么 | 读这个 |
+|---|---|
+| **先看看是什么** | 往下读本页，或直接看 [Releases](https://github.com/mengxing123456789/pelican-test/releases) 里的成片 |
+| **把片子跑起来** | [§5 怎么跑起来](#5-怎么跑起来) —— 注意要用分段渲染，不是 `npm run render` |
+| **理解它是怎么做的** | [§1 当前架构](#1-当前架构) · [§4 设计](#4-设计它是怎么工作的) |
+| **改代码前** | [docs/MEMORY.md](docs/MEMORY.md) —— 五个会静默失败的坑，踩过才知道 |
+| **弄清版本关系** | [docs/PROVENANCE.md](docs/PROVENANCE.md) —— 本仓库与 v1、B 站视频的关系及证据 |
+| **看每版改了什么** | [CHANGELOG.md](CHANGELOG.md) |
+| **当 npm 包用** | [docs/using-as-a-package.md](docs/using-as-a-package.md) |
+| **查第三方许可** | [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) |
+
+### 本页目录
 
 1. [当前架构](#1-当前架构)
 2. [技术采样与参考](#2-技术采样与参考)
@@ -326,7 +339,7 @@ v1 = [RoyceBella-commits/The-Pelican-Test](https://github.com/RoyceBella-commits
 | **修复** | `encode.mjs` 缺 `-start_number`；段文件名递增导致覆盖丢帧 |
 | **文档** | README 重写（架构图、实测数据、参考来源）、新增 CHANGELOG、预览图 |
 
-详见 [CHANGELOG.md](CHANGELOG.md) 与 [PROVENANCE.md](PROVENANCE.md)。
+详见 [CHANGELOG.md](CHANGELOG.md) 与 [docs/PROVENANCE.md](docs/PROVENANCE.md)。
 
 ---
 

@@ -167,4 +167,4 @@
 ## [1.0.0] — 原创作者的版本
 
 二十格美术、共享骨架、时间轴、渲染管线、配乐引擎。
-本项目在此基础上二次创作，详见 [PROVENANCE.md](PROVENANCE.md)。
+本项目在此基础上二次创作，详见 [docs/PROVENANCE.md](docs/PROVENANCE.md)。
