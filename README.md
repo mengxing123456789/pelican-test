@@ -1,155 +1,333 @@
-# 鹈鹕测试 · The Pelican Test
+# 鹈鹕测试 v2 · The Pelican Test (the chase)
 
-> 人类自古以来就痴迷于画鹈鹕骑自行车。——早在自行车被发明之前。
+> 风把一张画吹走了。鹈鹕骑上自行车去追。
 >
-> *Since time immemorial, humankind has been obsessed with drawing pelicans riding bicycles — long before the bicycle was invented.*
+> *The wind took a drawing, and something went after it.*
 
-![鹈鹕测试 封面：同一只鹈鹕被切成十二条，每条由一个时代的画风画成](media/cover.jpg)
+一部 **2 分 17 秒**（137 秒，8220 帧，1920×1080 @ 60 fps）的程序生成短片。
+**片中没有一张手绘图，也没有一秒录音**——每一帧画面由代码当场画出，每一个音符由代码实时合成。
 
-一部 2 分 17 秒的短片。一只白鹈鹕骑着一辆现代自行车，沿着一条连续的路，穿过二十幅不同时代的画。
-每过一道画框，世界就换一种画法，鹈鹕自己也跟着变成那个时代的样子。
-
-**片中没有一张手绘图，也没有一秒录音。** 每一帧画面都由代码当场画出，每一个音符都由代码当场合成。
-
-[English below ↓](#english)
+这不是 v1。这是在同一套程序化框架上做的**二次创作**：叙事、文本、音乐全部重写，
+二十格美术与引擎保留。差异见 [§5 与 v1 的差异](#5-与-v1-的差异)。
 
 ---
 
-## 二十个时代，二十份答卷
+## 目录
+
+1. [这是什么](#1-这是什么)
+2. [怎么跑起来](#2-怎么跑起来)
+3. [设计：它是怎么工作的](#3-设计它是怎么工作的)
+4. [技术应用](#4-技术应用)
+5. [与 v1 的差异](#5-与-v1-的差异)
+6. [创新点](#6-创新点)
+7. [原作者与致谢](#7-原作者与致谢)
+8. [目录结构](#8-目录结构)
+9. [版权](#9-版权)
+
+---
+
+## 1. 这是什么
+
+一只白鹈鹕骑着自行车，穿过二十个时代的画。每过一道画框，世界就换一种画法。
+
+**v2 的动机变了**：不再是"穿越美术史"的观光，而是**追逐**——那张被风吹走的画一直飘在它前面，
+每穿过一个时代，画就被那个时代重新画一遍，鹈鹕也跟着变。追上之后发现：画上画的，正是它自己。
+
+### 二十个时代
 
 | # | 画风 | 年代 | 这一格里发生了什么 |
 |---|---|---|---|
 | 1 | 撒哈拉岩画 | 约公元前 4000 年 | 牧人和牛群停下脚步，围观这位骑车的来客 |
-| 2 | 埃及壁画 | 约公元前 1300 年 | 一幅还没画完的墓室壁画：鹈鹕停下来，摆出标准的埃及侧身姿势 |
-| 3 | 汉画像石拓片 | 约公元 100 年 | 混进了官员的车马出行队伍，石匠当场在空白榜题上刻下「鹈鹕骑者」 |
-| 4 | 唐代白描 | 约 750 年 | 吴带当风——一阵风吹来，羽毛和衣带一起翻飞 |
+| 2 | 埃及壁画 | 约公元前 1300 年 | 一幅还没画完的墓室壁画：鹈鹕摆出标准的埃及侧身姿势 |
+| 3 | 汉画像石拓片 | 约公元 100 年 | 混进官员的车马出行队伍，石匠当场刻下「鹈鹕骑者」 |
+| 4 | 唐代白描 | 约 750 年 | 吴带当风——羽毛和衣带一起翻飞 |
 | 5 | 宋代山水 | 约 1000 年 | 镜头推进千仞高山，才在山路上找到小小的骑车鹈鹕 |
 | 6 | 清明上河图 | 约 1100 年 | 骑上虹桥，桥上的路人纷纷回头 |
 | 7 | 玛雅抄本 | 约 1200 年 | 旁边有人用玛雅点横数字，记下它踩了多少圈 |
 | 8 | 莫卧儿细密画 | 约 1600 年 | 宫廷花园里，宾客从好几个视角同时围观 |
 | 9 | 八大山人 | 约 1690 年 | 寥寥几笔，大片留白，鹈鹕翻了一个八大式的白眼 |
-| 10 | 爪哇皮影戏 | 约 1800 年 | 变成一只镂空皮影，车轮一顿一顿地转 |
+| 10 | 爪哇皮影戏 | 约 1800 年 | 变成镂空皮影，车轮一顿一顿地转 |
 | 11 | 浮世绘 | 1830 年代 | 富士山下的田间小道，赶路的人都回过头来 |
 | 12 | 星月夜 | 1889 年 | 夜空的漩涡跟着车轮一起转 |
-| 13 | 呐喊 | 1893 年 | 呐喊者被它吓了一跳，鹈鹕吼了回去，然后是尴尬的沉默 |
-| 14 | 诺斯费拉图 | 1922 年 | 墙上的影子自己爬上了楼梯，离开时"通了电" |
-| 15 | 示波器矢量图 | 1950 年代 | 有人转错了旋钮，鹈鹕扭成了一团李萨如图形 |
+| 13 | 呐喊 | 1893 年 | 呐喊者被吓了一跳，鹈鹕吼了回去，然后是尴尬的沉默 |
+| 14 | 诺斯费拉图 | 1922 年 | 墙上的影子自己爬上楼梯，离开时"通了电" |
+| 15 | 示波器矢量图 | 1950 年代 | 有人转错旋钮，鹈鹕扭成李萨如图形 |
 | 16 | 8-bit 像素游戏 | 1980 年代 | 跳过坑洞，吃到金币，弹出 1UP |
 | 17 | 早期聊天窗口 | 2000 年代 | 被发成一张 256 色动图，对方连发两次窗口抖动 |
-| 18 | 蒸汽波 | 2010 年代 | 整个世界慢放，大理石像转过头，磁带跳了针 |
+| 18 | 蒸汽波 | 2010 年代 | 世界慢放，大理石像转过头，磁带跳针 |
 | 19 | 竖屏短视频 | 2020 年代 | 画面变成竖屏，定格、慢放、点赞爆满 |
-| 20 | 代码美学 | 2020 年代 · 大模型时代 | 一行一行 SVG 代码，把它重新画了出来 |
+| 20 | 代码美学 | 大模型时代 | 一行一行 SVG 代码，把它重新画出来 |
 
-最后，二十幅画折成一面展墙，第二十一格留给了一张空着的发布会席位。
-
-![展墙：二十幅画与一个空席位](media/wall.jpg)
-
-> 截至目前，人类共提交了 20 份答卷。鹈鹕本人对此尚未发表评论。
-
-![空着的发布会席位，席卡上写着「鹈鹕（本人）」](media/press_seat.jpg)
-
-## 它是怎么做出来的
-
-- **画面全部由代码绘制。** 用的是 [p5.js](https://p5js.org) 和 [p5.brush](https://github.com/acamposuribe/p5.brush)，再加上浏览器自带的 Canvas。岩画的颜料颗粒、水墨的晕染、梵高的厚涂笔触、示波器的荧光、8-bit 的像素，都是一笔一笔算出来的。
-- **画面是"时间的函数"。** 给出任意一个时刻，程序就能画出那一刻的样子；同一时刻无论画多少次，结果都一模一样。所以可以多台浏览器同时渲染，最后拼成 60 fps 的成片。
-- **一只鹈鹕，二十种画法。** 所有时代共用同一副"骨架"（鹈鹕和自行车的动作），每个时代只负责用自己的画法把它画出来，所以鹈鹕跨过画框时，前后两半能严丝合缝地对上。
-- **音乐全部由代码合成。** 没有采样，也没有录音：拨弦、编钟、管风琴、芯片音乐、FM 电钢琴，都用浏览器的 Web Audio 实时合成。每个时代用自己的乐器演奏同一段原创主旋律，每次过画框的强拍上都会响一声车铃。蒸汽波那一段，是先合成一卷 80 年代商场音乐的"磁带"，再放慢到 0.79 倍播放。
-- **致敬，而非临摹。** 二十幅画都是向公有领域作品与风格的致敬，构图和笑点都是原创的；片中的聊天软件、短视频平台全部是虚构的，没有使用任何真实的标志或界面。
-
-## 致谢
-
-本片的制作方法参考了 **Tunai-0511** 的开源项目 **[meme67-art-history](https://github.com/Tunai-0511/meme67-art-history)**。
-"共享绘图工具包 + 每幅画一个场景文件 + 按时间逐帧渲染 + 无头浏览器截帧 + 接触表自查"这套工作方式就是从那里学来的。
-本片没有使用它的任何代码、画面、构图或笑点。衷心感谢作者的开源分享！
-
-也感谢 p5.js 与 p5.brush（Alejandro Campos Uribe）的作者，以及那些早已进入公有领域、至今仍在启发我们的艺术家和作品。
-
-## 版权
-
-- **代码**：MIT 协议，见 [LICENSE](LICENSE)。
-- **影片本身**（画面、成片视频、渲染出的音乐与音效、封面和 `media/` 里的图片）：© 2026 Royce Bella，保留所有权利。
-- 第三方库与字体说明见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+最后二十幅画折成一面 7×3 展墙，第二十一格是一张空着的发布会席位。
 
 ---
 
-## 想自己跑起来？
+## 2. 怎么跑起来
 
-需要 macOS（片中用到系统自带的中文字体）、Google Chrome、Node.js 20 以上和 ffmpeg。
+需要 **Node 20+**、**Google Chrome**、**ffmpeg** 在 PATH 上。
 
 ```bash
 npm install
-npm run dev        # 打开 http://127.0.0.1:5180/ ，在浏览器里实时渲染整部片子（带声音）
+npm run dev        # → http://127.0.0.1:5180/  浏览器里实时渲染整片（带声音）
 ```
 
-### 在 Windows / Linux 上跑
-
-原版只面向 macOS，`tools/lib/browser.mjs` 里写死了两处 macOS 专有的东西。
-现在会按平台自动探测，macOS 行为不变：
-
-| 原本 | Windows / Linux 上的处理 |
-|---|---|
-| Chrome 路径写死 `/Applications/Google Chrome.app/...` | 依次探测常见安装位置；`CHROME_PATH` 仍然优先 |
-| `--use-angle=metal`（Metal 只有 macOS 有） | Windows 用 `--use-angle=d3d11 --force_high_performance_gpu`；`PT_SOFTWARE_GL=1` 可退回 SwiftShader |
-| puppeteer 默认 180 s `protocolTimeout` | 设为 0。配乐渲染在单次 `evaluate()` 里要跑约 285 s，重场景单帧可达约 38 s，默认值会直接掐断 |
-
-实测（Windows 11 + RTX 4060 Laptop，6 个 Chrome 并行）：连续渲染稳定 **4.8–5.7 fps**，
-全片 8220 帧约 **25–28 分钟**。单帧几十秒是冷启动预热，不是稳态。
-
-字体走 Windows 自带的思源/微软雅黑等中文字体，无需另装。
-
-`node tools/check.mjs` 的确定性一项（同一帧两次渲染逐像素一致）在 D3D11 上会报几帧不一致，
-属 GPU 光栅化的末位浮点差——实测每帧仅 3–5 个像素、最大色差 1/255，
-且用 `--quick` 跳过后其余检查（禁用 API、过框节拍表）全部通过。
-
-预览页底部有播放、拖动进度条、逐帧步进。有些画面很重，实时播放可能会卡；想看流畅的版本，可以先渲染一份草稿视频：
+### 出成片
 
 ```bash
-node tools/render.mjs --draft && node tools/encode.mjs --draft   # 之后在预览页选"流畅播放"
+npm run audio      # 合成配乐 → audio/mix.wav（约 5–9 分钟）
+npm run render     # 渲染 8220 帧 → frames/（6 个 Chrome 并行，约 10–15 分钟）
+npm run encode     # 帧 + 音频 → out/pelican-test_1080p60.mp4
 ```
 
-<details>
-<summary>完整渲染与工具说明（给开发者）</summary>
+> **磁盘预警**：全片 PNG 序列约 **21 GB**（单帧平均 3.1 MB）。先确认可用空间。
+> 渲染器在磁盘写满时会把失败帧记成 0 字节却仍返回退出码 0 —— 用 `npm run check:frames` 核验。
 
-| 命令 | 作用 |
+### 各平台
+
+| 平台 | 状态 |
 |---|---|
-| `node tools/shot.mjs --t 5,11` | 截取指定时刻的静帧（还有 `--solo <id> --u 1,3`、`--scene <id>`、`--seam <id>`、`--debug`） |
-| `node tools/sheet.mjs --film` | 全片接触表，每秒一格（也可 `--scene <id>`、`--solo <id>`） |
-| `node tools/render.mjs [--draft]` | 渲染全部帧（60 fps 共 8220 帧；6 个 Chrome 并行；支持 `--from/--to`、`--resume`） |
-| `node tools/audio.mjs` | 合成配乐 → `audio/mix.wav`（`--only bell` 只渲染车铃，用于对拍） |
-| `node tools/levels.mjs` | 自动平衡各时代的响度 → `audio/levels.json` |
-| `node tools/encode.mjs [--draft]` | 帧 + 音频 → `out/*.mp4` |
-| `node tools/cover.mjs [--aspect 4:3]` | 生成封面 → `out/pelican-test_cover.png` 或 `out/pelican-test_cover_4x3.png` |
-| `node tools/check.mjs` | 检查禁用 API、骑行与接缝约定、过框节拍表，以及确定性（同一帧两次渲染逐像素一致） |
+| macOS | 原作者的目标平台，原生可跑 |
+| Windows | 已适配（本项目改动），实测 RTX 4060 上连续渲染 4.8–5.7 fps |
+| Linux | 已适配 Chrome 路径探测，未实测 |
 
-完整成片：`node tools/render.mjs && node tools/audio.mjs && node tools/encode.mjs` → `out/pelican-test_1080p60.mp4`。
+Windows 上做了三处修改，macOS 行为不变：
 
-```
-src/beat/     时间轴（节拍、几何，唯一事实来源）· 骑行（位置、曲柄、车轮）
-src/kit/      绘图工具包：笔刷封装与逐笔播种、烘焙缓存、文字、纸张材质、画框、数学
-src/rig/      鹈鹕与自行车的参数化骨架 · 默认钢笔线描
-src/scenes/   清单 + 每个时代一个场景文件（20 个）
-src/main/     入口与逐帧渲染、合成器、镜头、序幕、尾声展墙、发布会席位、预览页
-audio/        Web Audio 配乐：主旋律、各时代编曲、合成乐器、蒸汽波磁带、总线
-tools/        本地服务器、截图、接触表、渲染、合成、编码、封面、检查
-briefs/       每幅画的美术简报与风格总纲
-```
-
-时间轴：120 BPM，一小节 2 秒，60 fps。序幕 0–5 秒；第 *i* 幅画（1–20）从 5 + 6(i−1) 秒开始，正好落在强拍上；尾声 125–137 秒。
-
-</details>
+| 原本（macOS 专有） | Windows / Linux 上的处理 |
+|---|---|
+| Chrome 路径写死 `/Applications/...` | 按平台探测；`CHROME_PATH` 仍优先 |
+| `--use-angle=metal` | Windows 用 `--use-angle=d3d11 --force_high_performance_gpu`；`PT_SOFTWARE_GL=1` 退回 SwiftShader |
+| puppeteer 默认 180s `protocolTimeout` | 设为 0（配乐渲染要跑约 285 秒，重场景单帧可达 38 秒） |
 
 ---
 
-## English
+## 3. 设计：它是怎么工作的
 
-**The Pelican Test** is a 2:17 short film. A white pelican rides a modern bicycle along one continuous road through twenty framed paintings from twenty eras of art — from Saharan rock art, Han stone rubbings and Song ink landscapes, through Hokusai, Van Gogh, Munch and *Nosferatu*, to an oscilloscope, an 8-bit game, an early chat window, vaporwave, a vertical short video and, finally, an LLM-era code editor that writes the pelican back into being as SVG. Each time it crosses a frame, the world changes its medium, and so does the pelican.
+### 3.1 一句话：整部片子是**时间的纯函数**
 
-At the end the paintings fold into a gallery wall whose 21st cell is an empty press-conference seat. *To date, humankind has handed in 20 answers. The pelican itself has yet to comment.*
+给出任意时刻 `t`，程序就能算出那一刻的完整画面。同一个 `t` 无论渲染多少次，结果逐字节相同。
 
-There is not a single hand-drawn image or recorded sound in it: every frame is drawn by code (p5.js, p5.brush, Canvas) as a pure function of time, and all music is synthesised with Web Audio — each era plays the same original theme on its own instruments, with a bicycle bell on every frame crossing. The panels are original homages to public-domain works and styles; all apps shown are fictional.
+这条约束决定了很多事：
 
-**Thanks** to **Tunai-0511** and the open-source project **[meme67-art-history](https://github.com/Tunai-0511/meme67-art-history)**, whose working method — a shared drawing kit, one file per panel, frame-by-frame rendering as a function of time, headless capture and contact sheets — this film learned from. No code, imagery, compositions or jokes from that project are used. Thanks also to p5.js and p5.brush (Alejandro Campos Uribe).
+- 没有 `Math.random()`、没有 `Date.now()`，随机走 `rngAt(t, salt)`
+- 于是可以**多进程并行渲染**：把 8220 帧切成 N 片，各浏览器互不依赖
+- 于是断点续渲成立：渲染中断后 `--resume` 跳过已有帧
 
-**License:** the code is MIT ([LICENSE](LICENSE)); the film itself (frames, video, rendered music, covers and the images in `media/`) is © 2026 Royce Bella, all rights reserved.
+### 3.2 共享骨架 + 二十种画法
 
-**Run it:** macOS, Chrome, Node 20+, ffmpeg — `npm install && npm run dev`, then open http://127.0.0.1:5180/ to watch the film render live in your browser.
+所有时代共用**同一副骨架**（`src/rig/pelican.js`）：鹈鹕的身体、自行车的车架、曲柄、车轮的相位。
+每个时代只负责"用自己的画法把同一副骨架画出来"。
+
+这就是为什么鹈鹕跨过画框时前后两半能严丝合缝——它从来没有换过骨架，只是换了画它的人。
+
+### 3.3 时间轴是唯一事实来源
+
+`src/beat/timeline.js` 定义了一切：120 BPM、每小节 2 秒、60 fps、
+序幕 0–5 秒、第 *i* 幅画从 `5 + 6(i−1)` 秒开始、尾声 125–137 秒。
+
+**19 个过框点全部落在强拍上**，`npm run check` 会逐个验证。
+
+### 3.4 三层画布
+
+| 层 | 内容 | 为什么分开 |
+|---|---|---|
+| 底层 2D | 文字、标题、字幕 | p5.brush 会清掉 p5 的 `text()` |
+| WEBGL | 所有笔刷绘制的美术 | p5.brush 必须在 WEBGL 画布上工作 |
+| 合成 | 上面两层拍平成一张 PNG | 交付给编码器的是单一帧 |
+
+### 3.5 画面如何变成 MP4
+
+```
+renderFrame(t) → 合成 PNG → 落盘 f00000.png …
+                                    ↓
+                        ffmpeg 按序读入 + 音频
+                                    ↓
+                         H.264 + AAC → MP4
+```
+
+帧文件名补零到五位，保证字典序 = 时间序（ffmpeg 的 image2 输入依赖这一点）。
+
+---
+
+## 4. 技术应用
+
+| 技术 | 用在哪 | 为什么是它 |
+|---|---|---|
+| **p5.js 2.3.4** | 绘图运行时 | 保留了 WEBGL、几何、变换的完整控制 |
+| **p5.brush 2.2.3** | 水墨 / 厚涂 / 岩画质感 | 真正的笔刷引擎，能画出飞白、晕染、皴法，而不是滤镜 |
+| **Web Audio API** | 全片配乐 | 浏览器内离线渲染，无采样无录音；`OfflineAudioContext` 比实时快约 700 倍 |
+| **OfflineAudioContext** | 配乐批量渲染 | 137 秒配乐在浏览器里渲染，不占用音频设备 |
+| **puppeteer-core** | 无头浏览器驱动 | 逐帧渲染 + 截帧；多实例并行 |
+| **ANGLE / D3D11** | GPU 渲染后端 | Windows 上用独显；SwiftShader 仅作回退 |
+| **ffmpeg** | 编码封装 | H.264 + AAC + faststart |
+| **确定性 PRNG** | 全部随机 | mulberry32；同一 `t` 永远同一结果 |
+| **帧缓冲烘焙** | 重场景优化 | 静态层只画一次，之后每帧只画动的部分 |
+
+### 关键工程决策
+
+**为什么不用 WebCodecs 硬件编码？** 本项目用 PNG 序列 + ffmpeg。理由：无损中间态便于逐帧比对与断点续渲，
+且避开了 `VideoFrame` 只能截取单层画布的陷阱（本片有三层）。
+
+**为什么配乐要在浏览器里渲染？** Node 没有 `OfflineAudioContext`。浏览器是唯一能跑 Web Audio 的地方，
+所以配乐渲染也是一次 puppeteer 会话。
+
+**为什么烘焙？** p5.brush 实测：20–60 笔约 3–12 ms，但 240 笔要 55–120 ms，400 笔要 140–225 ms。
+宋代山水需要约 200 笔皴法——是每帧预算的十倍以上。所以静态层只烘焙一次。
+
+---
+
+## 5. 与 v1 的差异
+
+v1 指已发布的 [RoyceBella-commits/The-Pelican-Test](https://github.com/RoyceBella-commits/The-Pelican-Test)
+（B 站 [BV1pLnw6YEzq](https://www.bilibili.com/video/BV1pLnw6YEzq/)，19.7 万播放）。
+
+> v2 所在仓库与 v1 同源：已用配乐互相关验证，v1 音轨与 B 站音轨相关 **0.9995**。
+
+### 改了什么
+
+| 维度 | v1 | v2 |
+|---|---|---|
+| **叙事动机** | 观光：穿过二十个时代 | **追逐**：风卷走一张画，鹈鹕去追 |
+| **片头** | 「人类自古以来就痴迷于画鹈鹕骑自行车」 | 「风把一张画吹走了」/「鹈鹕骑上自行车去追」 |
+| **片尾** | 「截至目前，人类共提交了 20 份答卷」 | 「追了二十个时代，那张画终于落下来」/「画上画的，正是它自己」 |
+| **主旋律** | 散步调：上一步、停一下、再上一步 | **追逐调**：上行模进，结尾**不落回主音** |
+| **画的对象** | 无 | 新增**被追的那张画**，全程可见，逐格换画风 |
+| **平台适配** | 仅 macOS | 增加 Windows / Linux |
+
+### 没改什么
+
+二十格美术、骨架、时间轴、拍点、渲染管线、烘焙机制——全部保留。
+
+### 为什么这样改
+
+v1 的旋律是"走路"的节奏，配"观光"成立。但一旦动机变成追逐，散步调就不对了。
+所以新主题做了两件事：**连续上行模进**（一直在往上爬，不落地），以及
+**结尾停在 A 而不是主音 D**（未解决感）。未解决才会让下一格显得"必须去"。
+
+同理，结尾从"博物馆标签"（像在给观众报数）改成"追上发现是自己"——
+把鹈鹕从被展示的对象变成行动的主体。
+
+---
+
+## 6. 创新点
+
+1. **把"画什么"变成叙事对象**。v1 里"画"只是画框，v2 里"那张画"是角色：它有独立动机、
+   有自己的音乐（轻快的回旋音型，与鹈鹕的上行动机区分），并且**逐格被不同时代重画**。
+
+2. **用音乐结构承担叙事**。不靠旁白解释追逐，而用"上行不落地 + 不落主音"制造未完成感。
+
+3. **结尾反转**。追了二十个时代的东西是自己的画像——把"美术史如何描绘我们"这个主题收在一句话里。
+
+4. **程序化美术的跨时代一致性**。同一副骨架被二十种画法重绘，靠共享 rig 保证跨画框严丝合缝。
+
+5. **完全确定性渲染**。整片是时间的纯函数，可并行、可断点、可逐字节复现。
+
+---
+
+## 7. 原作者与致谢
+
+### 本仓库的基础
+
+本项目**基于 [RoyceBella-commits/The-Pelican-Test](https://github.com/RoyceBella-commits/The-Pelican-Test)**——
+即 v1 的源码，也是 B 站那支 19.7 万播放视频的来源。二十格美术、骨架、时间轴、渲染管线均出自该仓库。
+v2 的改动范围见 [§5](#5-与-v1-的差异)。
+
+**该仓库的原始版权声明**：代码 MIT，影片及其画面、音频 © 2026 Royce Bella 保留所有权利。
+本仓库保留这些声明（见 [LICENSE](LICENSE) 与 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)）。
+
+### v1 的方法论来源
+
+v1 的工作方式参考了 **Tunai-0511** 的开源项目
+**[meme67-art-history](https://github.com/Tunai-0511/meme67-art-history)**（代码 MIT）：
+"共享绘图工具包 + 每幅画一个场景文件 + 按时间逐帧渲染 + 无头浏览器截帧 + 接触表自查"。
+
+v1 与 v2 均**未使用**该项目的任何代码、画面、构图或笑点。
+
+### 第三方库
+
+| 组件 | 协议 | 说明 |
+|---|---|---|
+| [p5.js](https://p5js.org) 2.3.4 | **LGPL-2.1** | 动态加载，未修改 |
+| [p5.brush](https://github.com/acamposuribe/p5.brush) 2.2.3 | MIT | © Alejandro Campos Uribe |
+| simplex-noise | MIT | © Jonas Wagner（p5.brush 依赖） |
+| puppeteer-core 25.x | Apache-2.0 | 开发依赖，未分发 |
+| ffmpeg | LGPL/GPL | 未分发，调用本机安装 |
+
+完整说明见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+
+---
+
+## 8. 目录结构
+
+```
+├── film.html              预览页入口（浏览器实时渲染整片）
+├── index.html             项目首页
+├── package.json           依赖与脚本
+├── README.md              本文件
+├── PROVENANCE.md          版本关系与证据（v1 / v2 / 本地另一实现）
+├── THIRD_PARTY_NOTICES.md 第三方库与致敬声明
+│
+├── src/
+│   ├── beat/              ⏱ 时间轴：节拍、几何、骑行关键帧（唯一事实来源）
+│   ├── kit/               🖌 绘图工具包：笔刷封装、烘焙缓存、文字、纸张材质、数学
+│   ├── rig/               🦤 鹈鹕与自行车的参数化骨架（二十种画法共用）
+│   ├── scenes/            🖼 二十个时代，一格一个文件 + 清单
+│   └── main/
+│       ├── film.js        逐帧合成器（画面 = 时间的函数）
+│       ├── paper.js       ★ v2 新增：被追的那张画
+│       ├── camera.js      镜头运动
+│       ├── intro.js       序幕（v2 已改写文本）
+│       ├── outro.js       尾声展墙与发布会席位（v2 已改写文本）
+│       ├── press.js       发布会席位绘制
+│       └── ui.js          预览页控件
+│
+├── audio/                 🎵 Web Audio 配乐
+│   ├── score.js           ★ 主旋律与各时代编曲（v2 已重写主题）
+│   ├── engine.js          离线渲染总线
+│   ├── eras.js            各时代乐器编配
+│   ├── instruments.js     合成乐器（拨弦、编钟、管风琴…）
+│   ├── tape.js            蒸汽波磁带（变速变调）
+│   ├── dsp.js             信号处理工具
+│   └── levels.json        二十格响度标定
+│
+├── briefs/                📋 二十份美术简报 + STYLE.md 风格总纲
+├── media/                 🖼 封面与展墙图（仓库内静态资源）
+├── tools/                 🔧 渲染、截图、接触表、编码、检查、发布
+└── out/                   📦 成片输出（gitignore）
+```
+
+### 命令一览
+
+| 命令 | 作用 |
+|---|---|
+| `npm run dev` | 本地服务器，浏览器实时预览 |
+| `npm run shot -- --t 5,11` | 截取指定时刻静帧 |
+| `npm run sheet -- --film` | 全片接触表（每秒一格） |
+| `npm run render` | 渲染全部 8220 帧 |
+| `npm run audio` | 合成配乐 |
+| `npm run levels` | 自动平衡各时代响度 |
+| `npm run encode` | 帧 + 音频 → MP4 |
+| `npm run cover` | 生成封面 |
+| `npm run check` | 结构自检（禁用 API、过框节拍、确定性） |
+| `npm run check:frames` | 核验帧序列完整性（防磁盘写满的假成功） |
+| `npm run publish:api` | 通过 GitHub API 推送（git push 被墙时） |
+
+---
+
+## 9. 版权
+
+- **代码**：MIT，见 [LICENSE](LICENSE)，© 2026 Royce Bella
+- **影片本身**（画面、成片、渲染音频、封面与 `media/` 内图片）：© 2026 Royce Bella，保留所有权利
+- **v2 的改动部分**（叙事文本、主题旋律、`paper.js`）：在同样的许可下发布
+- 第三方库与致敬说明见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)
+
+---
+
+**English summary**: *The Pelican Test v2 — the chase.* A 2:17 procedurally generated film:
+a pelican chases a drawing the wind took, through twenty eras of art, each of which re-draws the
+drawing and the pelican in its own medium. Every frame is a pure function of time (p5.js + p5.brush);
+all music is synthesised with Web Audio. Based on
+[RoyceBella-commits/The-Pelican-Test](https://github.com/RoyceBella-commits/The-Pelican-Test),
+which itself learned its working method from
+[Tunai-0511/meme67-art-history](https://github.com/Tunai-0511/meme67-art-history).
+v2 rewrites the narrative, the text and the theme, and adds the chased drawing; the twenty panels
+and the engine are kept. Code MIT; the film is © 2026 Royce Bella.
