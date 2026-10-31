@@ -1,0 +1,58 @@
+# Publish the package to GitHub Packages when a version tag is pushed.
+#
+# WHY A WORKFLOW AND NOT A LOCAL `npm publish`
+# --------------------------------------------
+# Two reasons, both practical:
+#   1. This environment is not logged in to any npm registry, and asking the
+#      owner to paste a token into a chat is the wrong way to obtain one.
+#   2. GitHub Actions already holds a token (GITHUB_TOKEN) with the right
+#      scope, supplied by the runner. Nothing secret ever touches the repo,
+#      and the publish is reproducible from a tag.
+#
+# USAGE
+#   git tag v2.0.0 && git push origin v2.0.0
+#   (or run the workflow manually from the Actions tab)
+name: publish
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@mengxing123456789'
+
+      - name: Install
+        run: npm install --no-audit --no-fund
+
+      - name: Verify the package is intact
+        run: |
+          # A publish that ships a broken tree is worse than no publish.
+          node --check src/main/film.js
+          node --check src/main/paper.js
+          node --check audio/score.js
+          node -e "JSON.parse(require('fs').readFileSync('package.json','utf8')); console.log('package.json ok')"
+          # The timeline must still describe the film the README claims.
+          node --input-type=module -e "
+            import { FRAMES, DURATION } from './src/beat/timeline.js';
+            if (FRAMES !== 8220) { console.error('unexpected frame count', FRAMES); process.exit(1); }
+            console.log('timeline ok:', FRAMES, 'frames,', DURATION, 's');
+          "
+
+      - name: Publish
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
