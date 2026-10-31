@@ -8,7 +8,11 @@ export const BAR = 4 * BEAT;           // 2 s
 
 export const INTRO = 5;                // 2.5 bars: half-bar pickup, then 2 bars
 export const SCENE_DUR = 3 * BAR;      // 6 s per panel
-export const N_SCENES = 20;
+// v2: 20 original panels + 4 added traditions (islamic, byzantine, mask,
+// bauhaus). Everything downstream — OUTRO_START, DURATION, FRAMES, the ride
+// profile, the camera crossings, the score's panel loop — is derived from this
+// number, so the film's length is decided here and nowhere else.
+export const N_SCENES = 24;
 export const OUTRO = 6 * BAR;          // 12 s
 export const OUTRO_START = INTRO + N_SCENES * SCENE_DUR;  // 125
 export const DURATION = OUTRO_START + OUTRO;              // 137

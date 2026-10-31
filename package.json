@@ -1,7 +1,7 @@
 {
   "name": "@mengxing123456789/pelican-test",
-  "version": "2.0.0",
-  "description": "The Pelican Test v2 (the chase) — a 2:17 film drawn and scored entirely by code: a pelican chases a drawing through 20 eras of art",
+  "version": "2.1.0-dev",
+  "description": "The Pelican Test — a procedurally generated film: a pelican chases a drawing through 24 eras of art, every frame drawn and scored by code",
   "keywords": [
     "procedural-art",
     "p5js",

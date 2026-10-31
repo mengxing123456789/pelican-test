@@ -27,18 +27,40 @@ export function drawPen(P, opts = {}) {
   const bn = opts.brushName ?? 'HB';
   const key = opts.key ?? 'pen';
   const col = opts.color !== false;
+  // v2: when set, every filled part is filled with this colour instead of the
+  // built-in palette — and instead of the forced '#ffffff' that `color: false`
+  // otherwise produces. The Byzantine panel uses it to gild the figure; the
+  // Islamic panel uses it to punch the figure out of the tilework as a hole.
+  const fillInk = opts.fillInk ?? null;
   const farInk = '#7d736a';
 
   for (const part of rigParts(P)) {
     if (part.layer === 'far' && opts.far === false) continue;
     const [fillC0, wf, inkC0] = COLOR_STYLE[part.role] || [null, 1];
     let fillC = fillC0 === 'ink' ? ink : fillC0;
-    if (!col && fillC && fillC !== ink) fillC = part.layer === 'far' ? '#e9e4dc' : '#ffffff';
-    if (!col && (part.role === 'nail' || part.role === 'face')) continue;
+    if (fillInk && fillC) fillC = fillInk;
+    else if (!col && fillC && fillC !== ink) fillC = part.layer === 'far' ? '#e9e4dc' : '#ffffff';
+    if (!col && !fillInk && (part.role === 'nail' || part.role === 'face')) continue;
     const inkC = inkC0 === 'far' ? farInk : col && inkC0 ? inkC0 : ink;
     const w = wf * W;
 
     seed(key, part.name, 'f');
+    // OPAQUE fill path for fillInk. brush.wash() is a translucent watercolour:
+    // against a dark ground it all but vanishes, which is why the punched-out
+    // hole in the tilework and the gold mosaic figure both failed to show up.
+    // p5's own fill is flat and opaque, which is what those two panels need.
+    if (fillInk && fillC) {
+      push();
+      noStroke();
+      fill(fillInk);
+      if (part.kind === 'circle') circle(part.c[0], part.c[1], part.r * 2);
+      else if (part.kind === 'poly') {
+        beginShape();
+        for (const [px, py] of part.pts) vertex(px, py);
+        endShape(CLOSE);
+      }
+      pop();
+    }
     if (part.kind === 'circle') {
       if (fillC) { brush.noStroke(); brush.wash(fillC, 255); brush.circle(part.c[0], part.c[1], part.r); brush.noWash(); }
       if (w > 0) { seed(key, part.name, 'o'); brush.noFill(); brush.set(bn, inkC, w); brush.circle(part.c[0], part.c[1], part.r); }

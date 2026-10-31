@@ -11,7 +11,7 @@ import { storyCamera, viewRect } from './camera.js';
 import { introScene } from './intro.js';
 import * as OUT from './outro.js';
 import { initPress, renderPress } from './press.js';
-import { paperAt, drawPaper } from './paper.js';
+import { paperAt, drawPaper, chaseAt } from './paper.js';
 
 const W = TL.VIEW_W, H = TL.VIEW_H;
 const WALL = '#26221e';
@@ -58,6 +58,25 @@ export class Film {
     let mods = {};
     try { if (own.path) place = { ...place, ...(own.path(st.u, { ...place }) || {}) }; } catch (e) { this.err(own, e); }
     try { if (own.mods) mods = own.mods(st.u) || {}; } catch (e) { this.err(own, e); }
+
+    // --- v2: the chase, injected here rather than in twenty scene files ------
+    // Each scene keeps full authority over its own pose; the chase only adds to
+    // it, and only during the story section. `reach` lifts the near wing off the
+    // handlebar toward the sheet, and the scene's other mods still apply.
+    const chase = chaseAt(t);
+    if (chase && chase.reach > 0.001) {
+      mods = {
+        ...mods,
+        reach: chase.reach,
+        reachDir: chase.reachDir,
+        // the body pitches forward into the sprint, and the beak opens a little
+        // as it stretches — the two cheapest signals that it is trying hard
+        wind: Math.min(1, (mods.wind || 0) + chase.reach * 0.45),
+        billOpen: Math.min(1, (mods.billOpen || 0) + chase.reach * 0.35),
+        bob: (mods.bob ?? 1) * (1 - chase.reach * 0.35),
+      };
+    }
+
     const P = pose({ crank: st.crank, wheel: st.wheel, t, v: st.v }, mods);
     return { st, owner: st.i, place, mods, P };
   }

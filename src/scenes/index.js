@@ -44,6 +44,28 @@ export const MANIFEST = [
     title: { zh: '竖屏短视频', en: 'Vertical Short Video' }, year: { zh: '2020 年代', en: '2020s' } },
   { file: '20-code.js', id: 'code', color: '#1e2433',
     title: { zh: '代码美学', en: 'Code Aesthetics' }, year: { zh: '2020 年代 · 大模型时代', en: '2020s · the LLM era' } },
+
+  // ---------------------------------------------------------------------------
+  // v2 additions. Four traditions the original twenty did not cover, chosen so
+  // that each one is a different KIND of drawing problem rather than another
+  // century:
+  //
+  //   islamic  — pattern without a subject: geometry repeated from a rule
+  //   byzantine— mosaic: the image is made of discrete square tiles
+  //   mask     — carving: a face built from planes, seen head-on
+  //   bauhaus  — construction: the figure assembled from primitives
+  //
+  // They sit AFTER the code panel so the ride keeps its chronological arc and
+  // the additions read as an appendix ("and then it kept going"), not as holes
+  // punched in the original sequence.
+  { file: '21-islamic.js', id: 'islamic', color: '#1d4f6b',
+    title: { zh: '伊斯兰几何', en: 'Islamic Geometric Pattern' }, year: { zh: '约 1450 年', en: 'c. 1450' } },
+  { file: '22-byzantine.js', id: 'byzantine', color: '#8a6a1f',
+    title: { zh: '拜占庭马赛克', en: 'Byzantine Mosaic' }, year: { zh: '约 550 年', en: 'c. 550' } },
+  { file: '23-mask.js', id: 'mask', color: '#4a2c1d',
+    title: { zh: '非洲面具', en: 'African Mask' }, year: { zh: '约 1850 年', en: 'c. 1850' } },
+  { file: '24-bauhaus.js', id: 'bauhaus', color: '#c8332b',
+    title: { zh: '包豪斯构成', en: 'Bauhaus Construction' }, year: { zh: '1923 年', en: '1923' } },
 ];
 
 const DEFAULTS = { freezeU: 3, ride: {}, cues: [] };

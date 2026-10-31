@@ -73,11 +73,43 @@ export function paperAt(t) {
 }
 
 /**
- * Draw the sheet. Kept separate from paperAt so the caller controls ordering
- * (it must go UNDER the rider, so the pelican can reach toward it).
+ * How hard the pelican is stretching for the sheet at time t (0..1), and which
+ * way it should reach.
  *
- * `ctx.tint` is the panel's accent colour; the sheet is drawn in it so the
- * drawing belongs to the era it is passing through.
+ * The shape of this curve is the point of the gag. For most of a panel the
+ * sheet is merely ahead and the pelican rides normally. In the last ~quarter it
+ * lunges — the reach ramps up while the sheet drifts out of arm's length — and
+ * the panel ends with the wing just short. That is what makes each cut read as
+ * "it got away again" rather than "the wallpaper changed".
+ *
+ * Returns null outside the story section.
+ */
+export function chaseAt(t) {
+  const p = paperAt(t);
+  if (!p) return null;
+
+  const u = p.u;
+
+  // Nothing for the first half, then a fast ramp that peaks just before the
+  // cut. The final 7% falls away, so the reach is always interrupted rather
+  // than completed.
+  const ramp = Math.max(0, Math.min(1, (u - 0.55) / 0.28));
+  const lunge = Math.sin(Math.min(1, ramp) * Math.PI * 0.5) ** 1.6;
+  const fall = 1 - Math.max(0, Math.min(1, (u - 0.93) / 0.07));
+  const reach = Math.max(0, Math.min(1, lunge * fall));
+
+  // The sheet drifts up and away as the lunge develops, so the wing is always
+  // chasing a target that is already leaving.
+  const reachDir = -0.95 + 0.45 * u;
+
+  return { reach, sprint: reach * 0.8, reachDir, paper: p, u };
+}
+
+/**
+ * Draw the sheet. Kept separate from paperAt so the caller controls ordering.
+ *
+ * `tint` is the panel's accent colour; the sheet is drawn in it so the drawing
+ * belongs to the era it is passing through.
  */
 export function drawPaper(K, p, tint) {
   if (!p || p.alpha <= 0.001) return;

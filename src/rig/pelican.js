@@ -35,6 +35,13 @@ export const DEFAULT_MODS = {
   lookBack: 0,      // 0..1 head turns toward the viewer / back
   bob: 1,           // head/body bob amount
   spokes: 12,       // ≤ 12 (≤ 8 in low-fps scenes) to avoid wagon-wheel aliasing
+  // v2: the chase. `reach` swings the near wing out of its folded riding pose
+  // and up toward something ahead; `reachDir` says which way (radians, in the
+  // rig's local frame, 0 = +x i.e. forward). At 0 the wing sits on the grip
+  // exactly as before, so v1 poses are unchanged bit for bit.
+  reach: 0,         // 0..1 wing leaves the handlebar and stretches forward
+  reachDir: -0.55,  // radians; negative = up and forward
+  reachLen: 150,    // how far the wingtip travels at reach = 1, rig units
 };
 
 // two-bone IK: returns the knee for hip→ankle, bending forward (+x)
@@ -138,17 +145,30 @@ export function pose(state, mods = {}) {
   // wing: folded covert shape on the body + primaries reaching for the handlebar grip
   const shoulder = [bodyC[0] + 22, bodyC[1] - 22];
   const wingBack = [bodyC[0] - 58, bodyC[1] - 4 + flut * 20];
-  const wrist = mix(shoulder, grip, 0.55);
-  wrist[1] += 10;
+
+  // The reach. At m.reach = 0 this collapses to the original `mix(shoulder, grip,
+  // 0.55)`, so the riding pose is untouched; as it rises the wrist travels out
+  // along reachDir and the primaries fan from there instead of from the grip.
+  // That is the difference between "the pelican is riding" and "the pelican is
+  // stretching for the thing it is chasing".
+  const reachPt = [
+    shoulder[0] + Math.cos(m.reachDir) * m.reachLen,
+    shoulder[1] + Math.sin(m.reachDir) * m.reachLen,
+  ];
+  const wristRest = mix(shoulder, grip, 0.55);
+  wristRest[1] += 10;
+  const wrist = mix(wristRest, reachPt, m.reach);
+  const tipBase = mix(grip, reachPt, m.reach);
   const wing = smoothLoop([
     shoulder, [bodyC[0] - 6, bodyC[1] - 32], [bodyC[0] - 40, bodyC[1] - 22], wingBack,
     [bodyC[0] - 30, bodyC[1] + 14], [bodyC[0] + 10, bodyC[1] + 14], wrist,
   ], 5);
-  // primaries: 5 dark feathers fanning from wrist to grip
+  // primaries: 5 dark feathers fanning from wrist toward the grip (or, mid-reach,
+  // toward the stretched tip)
   const primaries = [];
   for (let k = 0; k < 5; k++) {
     const f = k / 4;
-    const tip = [grip[0] - 2 + f * 6, grip[1] - 2 + f * 9];
+    const tip = [tipBase[0] - 2 + f * 6, tipBase[1] - 2 + f * 9];
     const flutter = m.wind * Math.sin(t * 11 + k) * 3;
     const mid = mix(wrist, tip, 0.5);
     primaries.push(smoothPath([[wrist[0] - 14 + f * 4, wrist[1] - 6 + f * 6], [mid[0], mid[1] + flutter], tip], 4));
