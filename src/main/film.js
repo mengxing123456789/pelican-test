@@ -11,10 +11,20 @@ import { storyCamera, viewRect } from './camera.js';
 import { introScene } from './intro.js';
 import * as OUT from './outro.js';
 import { initPress, renderPress } from './press.js';
+import { paperAt, drawPaper } from './paper.js';
 
 const W = TL.VIEW_W, H = TL.VIEW_H;
 const WALL = '#26221e';
 const TILE = 1024;
+
+/** '#2e7d4a' -> [46, 125, 74]. Returns null for anything unexpected. */
+function hexToRgb(hex) {
+  if (typeof hex !== 'string') return null;
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex.trim());
+  if (!m) return null;
+  const n = parseInt(m[1], 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
 
 export class Film {
   constructor(scenes) {
@@ -230,11 +240,38 @@ export class Film {
     });
     // screen-space overlay of the active scene (e.g. the 9:16 letterbox)
     const i = TL.sceneIndexAt(t);
+
+    // --- the chased drawing ------------------------------------------------
+    // Drawn in SCREEN space, after the panels and their frames so it is never
+    // clipped by a picture frame, but before the scene overlays so a panel's
+    // own letterboxing can still sit on top of it. It goes UNDER nothing here
+    // because the rider lives inside the panel's own buffer; the sheet is
+    // always in front of the panel art but behind the frame, which is what
+    // makes it read as "out in the room, not painted on the wall".
+    this.drawChasedPaper(t);
+
     for (const j of [i - 1, i, i + 1]) {
       const sc = this.scenes[j];
       if (!sc?.overlay) continue;
       try { sc.overlay(K, t - TL.sceneStart(j), { t, cam, rider: R }); } catch (e) { this.err(sc, e); }
     }
+  }
+
+  /**
+   * The chased drawing, in screen space.
+   *
+   * Tinted with the current panel's accent so the same sheet is re-drawn by
+   * every era it passes through. Returns silently outside the story section —
+   * the intro has no chase yet and the outro resolves it.
+   */
+  drawChasedPaper(t) {
+    const p = paperAt(t);
+    if (!p) return;
+    const sc = this.scenes[p.i];
+    // The manifest gives each era one accent colour ("#2e7d4a"); using it means
+    // the same sheet is re-inked by every era it passes through, instead of
+    // floating over all twenty in one fixed colour.
+    drawPaper(K, p, hexToRgb(sc && sc.color) || [40, 34, 28]);
   }
 
   /** Soft gallery spotlights on the wall above/below the visible frames. */
