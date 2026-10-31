@@ -87,6 +87,25 @@ film.js 合成：画框 → 各格 → 被追的画 → 文字层
 puppeteer 截帧 → frames/*.png → ffmpeg + audio/mix.wav → MP4
 ```
 
+### 工具层
+
+```
+tools/
+  server.mjs            本地静态服务器（含 Chrome 探测、GPU 启动参数）
+  render.mjs            渲染帧序列（多 Chrome 并行，支持 --from/--to/--resume）
+  render-segmented.mjs  ★ 分段渲染→编码→删图→拼接（本机唯一可行的出片路径）
+  encode.mjs            帧 + 音频 → MP4（★ --start 支持非 0 起点的段）
+  audio.mjs             离线合成配乐 → audio/mix.wav
+  levels.mjs            逐格响度自动标定 → audio/levels.json
+  check.mjs             结构自检（禁用 API、过框节拍、确定性）
+  check-frames.mjs      ★ 核验帧序列（帧数/0 字节/断层/PNG 头）
+  preview-strip.mjs     ★ 从成片抽帧生成 README 预览图
+  shot.mjs / sheet.mjs  单帧截图 / 接触表
+  cover.mjs             封面生成
+  push-via-api.mjs      ★ git push 被墙时的 API 推送（Git Data API）
+  lib/browser.mjs       puppeteer 启动（跨平台 Chrome 路径与 ANGLE 后端）
+```
+
 ### 三条硬约束
 
 1. **画面是时间的纯函数。** 同一 `t` 渲染两次逐字节相同。禁止 `Math.random()` / `Date.now()`，随机走 `rngAt(t, salt)`。
@@ -102,11 +121,23 @@ puppeteer 截帧 → frames/*.png → ffmpeg + audio/mix.wav → MP4
 | 项目 | 数值 | 怎么测的 |
 |---|---|---|
 | p5.brush 笔刷成本 | 20–60 笔：3–12 ms；240 笔：55–120 ms；400 笔：140–225 ms | 实际绘制计时 |
-| 单帧渲染（RTX 4060 / D3D11） | 稳态 **4.8–5.7 fps** | 连续渲染实测 |
-| 配乐离线渲染 | 137 s 配乐约 **285–540 s** | `tools/audio.mjs` 计时 |
-| 全片 PNG 体积 | 单帧均值 **3.1 MB**，全片约 **21 GB** | 采样 65 帧覆盖 20 格 |
-| 积分响度 | **−16.5 LUFS**，真峰值 −1.1 dBFS | ffmpeg `ebur128` |
-| 各格电平 | 20 格全部落在 0.02–0.08 RMS | 逐格 RMS 计算 |
+| 单帧渲染（RTX 4060 / D3D11） | 稳态 **7–8 fps**（轻格可达 14 fps） | 分段渲染计时 |
+| 全片渲染耗时 | 9660 帧约 **55 分钟**（6 worker，分 6 段） | 分段渲染实测 |
+| 配乐离线渲染 | 161 s 配乐约 **520–565 s** | `tools/audio.mjs` 计时 |
+| 全片 PNG 体积 | 单帧均值 **3.1 MB**，全片约 **29 GB** | 采样 + 分段实测 |
+| 分段渲染峰值磁盘 | 单段 1600 帧约 **5 GB** | 分段流程实测 |
+| 成片体积 | **333 MB** / 161 s / 9660 帧 | `ffprobe` |
+| 积分响度 | **−19.4 LUFS**（自动标定目标），真峰值 −1.1 dBFS | `tools/levels.mjs` + `ebur128` |
+| 各格电平 | 24 格经自动标定至同一目标 | 逐格 RMS 计算 |
+
+### 分段渲染解决了什么
+
+| 问题 | 未处理时 | 处理方式 |
+|---|---|---|
+| 磁盘装不下整片 PNG | 29 GB vs 28 GB 可用，必定写满 | 渲染一段→编码→删 PNG→下一段 |
+| 写满时静默失败 | 渲染器记 0 字节帧但仍退出 0 | 每段编码前核验帧数与非空 |
+| 段文件命名冲突 | 递增序号 `seg_000` 被第二次运行覆盖，丢 2410 帧 | 改为按**首帧号**命名 |
+| 段内序号不连续 | ffmpeg 找 `f00000.png` 报错 | `encode.mjs` 新增 `--start` 传 `-start_number` |
 
 ### 参考了什么
 
@@ -212,15 +243,28 @@ npm run dev        # → http://127.0.0.1:5180/  浏览器实时渲染
 
 ### 出成片
 
+**不要用 `npm run render` 再 `npm run encode`。** 全片 PNG 序列约 29 GB，
+本机磁盘装不下，而磁盘写满时渲染器会把失败帧记成 0 字节却仍返回退出码 0
+（本项目曾因此产出 1359 个空帧并报告"成功"）。用分段流程：
+
 ```bash
-npm run audio        # 合成配乐 → audio/mix.wav
-npm run render       # 渲染全部帧 → frames/（⚠ 约 21 GB，先确认磁盘）
-npm run check:frames # 核验帧序列完整性
-npm run encode       # → out/pelican-test_1080p60.mp4
+npm run audio              # 1. 合成配乐 → audio/mix.wav（约 9 分钟）
+npm run render:segmented   # 2. 分段渲染+编码+拼接 → out/pelican-test_1080p60.mp4
+npm run preview            # 3. 重新生成 README 的预览图
 ```
 
-> **磁盘预警**：渲染器在磁盘写满时会把失败帧记成 0 字节却仍返回退出码 0。
-> 这就是本项目曾产出 1359 个空帧却报告"成功"的原因。`check:frames` 专门查这个。
+`render:segmented` 的工作方式：渲染一段 → 核验帧数与非空 → 编码成段 →
+**立即删除 PNG** → 下一段 → 最后拼接并混入配乐。
+峰值磁盘占用从「整片 29 GB」降到「单段约 5 GB」。
+
+```bash
+node tools/render-segmented.mjs --seg 1200        # 更小的段
+node tools/render-segmented.mjs --from 0 --to 3000  # 只渲一段
+node tools/render-segmented.mjs --keep            # 保留 PNG（调试用）
+```
+
+> `npm run check:frames` 用于单段核验；分段流程内部已自动执行同样的检查，
+> 任一帧为空就拒绝编码，不会把残缺段混进成片。
 
 ### Windows / Linux
 
@@ -257,6 +301,16 @@ v1 = [RoyceBella-commits/The-Pelican-Test](https://github.com/RoyceBella-commits
 | 平台 | 仅 macOS | + Windows / Linux |
 
 **保留未改**：原有二十格美术、骨架、时间轴节拍、渲染管线、烘焙机制。
+
+### 最近一轮（v2.2.0）改了什么
+
+| 类别 | 改动 |
+|---|---|
+| **成片** | 24 格版首次渲染完成：9660 帧 / 161.02 s / 333 MB |
+| **配乐** | 补上四个新格的编配（原先这 24 秒是静音）；逐格响度自动标定 |
+| **工具** | 分段渲染 `render-segmented.mjs`、预览图 `preview-strip.mjs`、帧核验 `check-frames.mjs` |
+| **修复** | `encode.mjs` 缺 `-start_number`；段文件名递增导致覆盖丢帧 |
+| **文档** | README 重写（架构图、实测数据、参考来源）、新增 CHANGELOG、预览图 |
 
 详见 [CHANGELOG.md](CHANGELOG.md) 与 [PROVENANCE.md](PROVENANCE.md)。
 
