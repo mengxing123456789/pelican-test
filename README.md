@@ -71,6 +71,9 @@ npm install
 npm run dev        # → http://127.0.0.1:5180/  浏览器里实时渲染整片（带声音）
 ```
 
+> **也可以作为 npm 包安装**（从 GitHub Packages）：见 [docs/using-as-a-package.md](docs/using-as-a-package.md)。
+> 成片不打包在仓库里，请从 [Releases](https://github.com/mengxing123456789/pelican-test/releases) 下载。
+
 ### 出成片
 
 ```bash
