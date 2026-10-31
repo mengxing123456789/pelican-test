@@ -1,5 +1,7 @@
 # 鹈鹕测试 · The Pelican Test
 
+![封面：一只鹈鹕被切成十二条，每条由一个时代的画风画成](media/cover.jpg)
+
 > 风把一张画吹走了。鹈鹕骑上自行车去追。
 >
 > *The wind took a drawing, and something went after it.*

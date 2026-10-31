@@ -93,8 +93,14 @@ export function drawOutroCaptions(K, t) {
   const a1 = smoothstep(T_CAP1, T_CAP1 + 0.5, t) * (1 - smoothstep(T_PUSH0 - 0.15, T_PUSH0 + 0.35, t));
   const a2 = smoothstep(T_CAP2, T_CAP2 + 0.4, t);
   if (a1 > 0) {
-    K.text({ text: '追了二十个时代，那张画终于落下来。', font: '"Songti SC", serif', weight: 600, size: 44, color: ink, align: 'center', letterSpacing: 2 }, 960, 852 - 8 * (1 - a1), 1, a1);
-    K.text({ text: 'Twenty eras later, the drawing comes down.', font: '"Baskerville", serif', style: 'italic', size: 24, color: ink, align: 'center' }, 960, 910 - 8 * (1 - a1), 1, a1 * 0.8);
+    // The count comes from the timeline, not from a literal. v2 added four
+    // panels and this caption still read "twenty eras" for a 24-panel film —
+    // a mismatch you only notice by watching the ending.
+    const zhNum = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
+    const n = N_SCENES;
+    const nZh = n <= 9 ? zhNum[n] : `${n}`;
+    K.text({ text: `追了${nZh}个时代，那张画终于落下来。`, font: '"Songti SC", serif', weight: 600, size: 44, color: ink, align: 'center', letterSpacing: 2 }, 960, 852 - 8 * (1 - a1), 1, a1);
+    K.text({ text: `${n} eras later, the drawing comes down.`, font: '"Baskerville", serif', style: 'italic', size: 24, color: ink, align: 'center' }, 960, 910 - 8 * (1 - a1), 1, a1 * 0.8);
   }
   if (a2 > 0) {
     K.text({ text: '画上画的，正是它自己。', font: '"Songti SC", serif', weight: 600, size: 44, color: ink, align: 'center', letterSpacing: 2 }, 960, 852 - 6 * (1 - a2), 1, a2);
