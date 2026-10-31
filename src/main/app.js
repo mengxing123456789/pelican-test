@@ -90,7 +90,19 @@ window.selfCheck = () => {
       if (p.lost > 1.05) out.errors.push(`${tag}: bar-2 hold loses ${p.lost.toFixed(2)} s of travel (max 1.0)`);
       if (p.peak > 1.7 * TL.SPEED) out.warnings.push(`${tag}: peak speed ${(p.peak / TL.SPEED).toFixed(2)}× cruising`);
     }
-    const seamUs = [-1, -0.5, 0, 0.25, 0.5, 0.75, 1, 5, 5.25, 5.5, 5.75, 6, 6.5, 7].filter((u) => i < N - 1 || u <= 1);
+    // Which u values must be checked for "default placement at the seams".
+    //
+    // The last panel may bring the drawn rider to rest away from the default
+    // position (it is the end of the road), so it is only checked at the entry
+    // seam. A panel in the MIDDLE of the film may also legitimately do it when
+    // the picture requires it — `code` brakes into its own editor preview. That
+    // used to pass only by accident, because `code` was the last panel; once v2
+    // appended four more it stopped being last and a correct scene began failing
+    // this contract. Such a scene now says so with `seamOffsets: true`.
+    const isLast = i === N - 1;
+    const mayOffset = isLast || sc.seamOffsets === true;
+    const seamUs = [-1, -0.5, 0, 0.25, 0.5, 0.75, 1, 5, 5.25, 5.5, 5.75, 6, 6.5, 7]
+      .filter((u) => (mayOffset ? u <= 1 : true));
     for (const u of seamUs) {
       if (sc.path) {
         const base = { x: 500, y: TL.ROAD_Y, scale: 1, rot: 0 };

@@ -30,7 +30,7 @@ const SKY_B = [86, 96, 156];
 const GROUND = [96, 78, 52];
 const HALO = [246, 226, 150];
 
-const RIDE = { hold: [1.8, 3.8], speed: 0.0, ramp: 0.34 };
+const RIDE = { hold: [2.0, 3.3], speed: 0.0, ramp: 0.34 };
 const ROAD_Y = 812;
 const TESS = 18;                 // px per tessera at 1000-unit scale
 

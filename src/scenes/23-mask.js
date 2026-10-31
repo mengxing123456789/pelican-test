@@ -31,7 +31,7 @@ const WHITE = [232, 220, 196];
 const SOOT = [26, 18, 14];
 const RED = [140, 44, 34];
 
-const RIDE = { hold: [1.6, 4.0], speed: 0.0, ramp: 0.32 };
+const RIDE = { hold: [2.1, 3.3], speed: 0.0, ramp: 0.32 };
 const ROAD_Y = 830;
 
 /** Wood grain as a fill: streaks along x, denser at the edges. */

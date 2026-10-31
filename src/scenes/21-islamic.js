@@ -33,7 +33,7 @@ const TILE_A = '#e8dcc0';       // bone
 const TILE_B = '#c9a24a';       // gold
 const TILE_C = '#3f8fa8';       // turquoise
 const INK = '#0d2735';
-const RIDE = { hold: [2.0, 3.6], speed: 0.0, ramp: 0.35 };
+const RIDE = { hold: [2.1, 3.3], speed: 0.0, ramp: 0.35 };
 const ROAD_Y = 800;
 
 /**

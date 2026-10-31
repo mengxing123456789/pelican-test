@@ -14,9 +14,14 @@ export const SCENE_DUR = 3 * BAR;      // 6 s per panel
 // number, so the film's length is decided here and nowhere else.
 export const N_SCENES = 24;
 export const OUTRO = 6 * BAR;          // 12 s
-export const OUTRO_START = INTRO + N_SCENES * SCENE_DUR;  // 125
-export const DURATION = OUTRO_START + OUTRO;              // 137
-export const FRAMES = Math.round(DURATION * FPS);         // 8220
+// Deliberately no literal totals in these comments. They used to read
+// 125 / 137 / 8220 and had been wrong ever since the film grew to 24 panels —
+// the exact same stale-hard-coded-number failure that broke the CI assertion
+// and the outro caption. Derive, or print it:
+//   node --input-type=module -e "import('./src/beat/timeline.js').then(m=>console.log(m.OUTRO_START,m.DURATION,m.FRAMES))"
+export const OUTRO_START = INTRO + N_SCENES * SCENE_DUR;
+export const DURATION = OUTRO_START + OUTRO;
+export const FRAMES = Math.round(DURATION * FPS);
 
 // Downbeats sit on odd seconds (1, 3, 5, ...): the intro starts with a half-bar pickup.
 export const DOWNBEAT0 = 1;

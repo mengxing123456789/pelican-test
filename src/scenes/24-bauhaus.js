@@ -30,7 +30,7 @@ const BLUE = [38, 86, 150];
 const BLACK = [26, 24, 22];
 const PAPER = [238, 232, 216];
 
-const RIDE = { hold: [1.5, 4.2], speed: 0.0, ramp: 0.3 };
+const RIDE = { hold: [2.0, 3.2], speed: 0.0, ramp: 0.3 };
 const ROAD_Y = 812;
 const GRID = 1000 / 8;           // 8-unit grid
 

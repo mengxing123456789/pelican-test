@@ -48,7 +48,16 @@ const C = {
 };
 
 // ------------------------------------------------------------------ motion
-const RIDE = { stopAt: 500 };          // camera: the film camera follows this profile and rests on the panel centre
+// No `stopAt` here. It used to be the last panel, so the film profile braked to
+// a halt in this panel; when v2 appended four more panels this panel stopped
+// being the end of the road, and leaving `stopAt` made the rider come to rest
+// TWICE — once here, then again in the real last panel. `src/scenes/index.js`
+// adds `stopAt` to whichever panel is actually last, so nothing needs to be
+// declared here.
+//
+// The braking below is different: it is this panel's own picture, the drawn
+// rider rolling to a stop inside its code preview. That stays.
+const RIDE = {};
 const X_REST = 757;                    // the drawn rider rests here (preview centre; crank exactly at π)
 const BRAKE = [4.0, 5.0];
 /** Drawn rider position (panel-local x of the bottom bracket). Equal to the film profile for u ≤ 2. */
@@ -490,6 +499,11 @@ function strokePartial(c, samples, p) {
 export default {
   freezeU: 5.5,
   ride: RIDE,
+  // This panel moves the DRAWN rider away from the default placement late in the
+  // panel (the brake into its editor preview), which the seam contract normally
+  // forbids for a mid-film panel. Declared explicitly so the allowance survives
+  // the panel no longer being the last one.
+  seamOffsets: true,
   cues: [
     { u: -3.0, name: 'thinking' },
     { u: 0.5, name: 'streamStart' }, { u: 1.0, name: 'dissolve' }, { u: 1.5, name: 'tick' },
