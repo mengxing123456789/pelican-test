@@ -32,7 +32,7 @@
 | **先看看是什么** | 往下读本页，或直接看 [Releases](https://github.com/mengxing123456789/pelican-test/releases) 里的成片 |
 | **把片子跑起来** | [§5 怎么跑起来](#5-怎么跑起来) —— 注意要用分段渲染，不是 `npm run render` |
 | **理解它是怎么做的** | [§1 当前架构](#1-当前架构) · [§4 设计](#4-设计它是怎么工作的) |
-| **改代码前** | [docs/MEMORY.md](docs/MEMORY.md) —— 五个会静默失败的坑，踩过才知道 |
+| **改代码前** | [docs/MEMORY.md](docs/MEMORY.md) —— 九个会静默失败的坑，踩过才知道 |
 | **弄清来源与创作边界** | [docs/PROVENANCE.md](docs/PROVENANCE.md) —— 原作是谁的、v2 改了什么、凭什么说同源 |
 | **看每版改了什么** | [CHANGELOG.md](CHANGELOG.md) |
 | **当 npm 包用** | [docs/using-as-a-package.md](docs/using-as-a-package.md) |
