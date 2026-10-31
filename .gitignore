@@ -8,3 +8,4 @@ audio/*.wav
 .DS_Store
 ._*
 _probe*.mjs
+_film_parts/
