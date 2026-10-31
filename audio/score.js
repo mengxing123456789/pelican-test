@@ -11,21 +11,56 @@ import * as I from './instruments.js';
 import { ERAS, V } from './eras.js';
 import { FLASHES, T_PASS } from '../src/main/outro.js';
 
-// ------------------------------------------------------------------ the theme (original)
-// D major pentatonic. Notes: [beat offset from the panel's first downbeat, length in beats, midi, velocity]
-const D4 = 62, E4 = 64, Fs4 = 66, A4 = 69, B4 = 71, D5 = 74, A3 = 57, B3 = 59;
+// ------------------------------------------------------------------ the theme (v2: the chase)
+// D major pentatonic, but built around a CHASE figure rather than a stroll.
+//
+// WHY IT IS DIFFERENT
+// -------------------
+// The v1 theme is a walking tune: step up, settle, step up, settle — it sounds
+// like someone enjoying a ride. This film's premise is now different: the
+// pelican is chasing a drawing that the wind took. So the melody has to feel
+// like it is *going somewhere and not arriving*:
+//
+//   - THEME.A opens with a rising 3-note figure (D-E-F#) that repeats a step
+//     higher each bar; a sequence that climbs and never lands is the musical
+//     shape of pursuit.
+//   - The phrase ends on B each time, not on the tonic D. An unresolved end is
+//     what makes the next panel feel necessary.
+//   - THEME.B is the drawing itself: a small, high, circular figure (A-B-A)
+//     that keeps turning up ahead of the rider. It is deliberately shorter and
+//     lighter than A so the ear can tell "the pelican" from "the paper".
+//
+// Notes: [beat offset from the panel's first downbeat, length in beats, midi, velocity]
+const D4 = 62, E4 = 64, Fs4 = 66, A4 = 69, B4 = 71, D5 = 74, E5 = 76, A3 = 57, B3 = 59, Fs3 = 54;
 export const THEME = {
   A: [
-    [0, 1.5, D4, 0.9], [1.5, 0.5, E4, 0.7], [2, 1, Fs4, 0.8], [3, 1, A4, 0.85],
-    [4, 2, B4, 0.9], [6, 0.5, A4, 0.7], [6.5, 0.5, Fs4, 0.7],
-    [8, 1, E4, 0.8], [9, 0.5, Fs4, 0.7], [9.5, 0.5, E4, 0.7], [10, 1, D4, 0.8], [11, 0.5, A3, 0.75], [11.5, 0.5, B3, 0.8],
+    // the climb: D-E-F#, then a step higher E-F#-A, then F#-A-B
+    [0, 0.5, D4, 0.85], [0.5, 0.5, E4, 0.8], [1, 0.5, Fs4, 0.9], [1.5, 0.5, E4, 0.7],
+    [2, 0.5, E4, 0.8], [2.5, 0.5, Fs4, 0.8], [3, 0.5, A4, 0.9], [3.5, 0.5, Fs4, 0.7],
+    // full statement of the figure, then the reach upward
+    [4, 0.5, Fs4, 0.85], [4.5, 0.5, A4, 0.85], [5, 1, B4, 0.95], [6, 0.5, A4, 0.7],
+    [6.5, 0.5, Fs4, 0.7], [7, 0.5, E4, 0.75], [7.5, 0.5, Fs4, 0.75],
+    // the reach: up to D5 and E5, then fall back — still no tonic
+    [8, 0.5, A4, 0.85], [8.5, 0.5, B4, 0.85], [9, 0.5, D5, 0.9], [9.5, 0.5, E5, 0.95],
+    [10, 1, D5, 0.85], [11, 0.5, B4, 0.8], [11.5, 0.5, A4, 0.75],
   ],
   B: [
-    [0, 1.5, A4, 0.9], [1.5, 0.5, B4, 0.7], [2, 1, D5, 0.85], [3, 1, B4, 0.8],
-    [4, 2, A4, 0.9], [6, 0.5, Fs4, 0.7], [6.5, 0.5, E4, 0.7],
-    [8, 1, Fs4, 0.8], [9, 0.5, E4, 0.7], [9.5, 0.5, D4, 0.7], [10, 1, E4, 0.8], [11, 0.5, A3, 0.75], [11.5, 0.5, B3, 0.8],
+    // the drawing: high, light, circular — it always turns back on itself
+    [0, 0.5, A4, 0.6], [0.5, 0.5, B4, 0.6], [1, 0.5, A4, 0.6], [1.5, 0.5, Fs4, 0.5],
+    [2, 1, E4, 0.55], [3, 0.5, Fs4, 0.5], [3.5, 0.5, E4, 0.5],
+    [4, 0.5, A4, 0.6], [4.5, 0.5, B4, 0.6], [5, 0.5, D5, 0.65], [5.5, 0.5, B4, 0.55],
+    [6, 1, A4, 0.6], [7, 0.5, Fs4, 0.5], [7.5, 0.5, E4, 0.5],
+    // it slips away at the end of the phrase — the wind takes it again
+    [8, 0.5, E4, 0.5], [8.5, 0.5, Fs4, 0.55], [9, 0.5, E4, 0.5], [9.5, 0.5, D4, 0.5],
+    [10, 1, B3, 0.55], [11, 1, A3, 0.5],
   ],
 };
+
+/**
+ * The chase figure as a standalone motif, for the layers that need to quote it
+ * outside a panel's 4-bar frame (intro, the paper itself, the outro).
+ */
+export const CHASE_MOTIF = [[0, 0.5, D4], [0.5, 0.5, E4], [1, 0.5, Fs4], [1.5, 1, B4]];
 
 // ------------------------------------------------------------------ through-line layers
 const bellInst = I.bell({ partials: [[1, 1, 0.9], [2.32, 0.55, 0.5], [3.94, 0.3, 0.3], [5.1, 0.12, 0.2]], level: 0.13, strike: 0.25, strikeRatio: 2 });
