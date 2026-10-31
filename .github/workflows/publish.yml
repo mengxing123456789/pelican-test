@@ -45,11 +45,25 @@ jobs:
           node --check src/main/paper.js
           node --check audio/score.js
           node -e "JSON.parse(require('fs').readFileSync('package.json','utf8')); console.log('package.json ok')"
-          # The timeline must still describe the film the README claims.
+          # The timeline must be self-consistent.
+          #
+          # This used to assert FRAMES === 8220, which silently became a
+          # guaranteed failure the moment the film grew from 20 panels/137 s to
+          # 24 panels/161 s: the tag builds for v2.0.0, v2.1.x and v2.2.x all
+          # died here in ten seconds and npm never received anything newer than
+          # 2.0.0. A hard-coded film length is a trap, so the check is now
+          # derived from whatever the timeline actually says.
           node --input-type=module -e "
-            import { FRAMES, DURATION } from './src/beat/timeline.js';
-            if (FRAMES !== 8220) { console.error('unexpected frame count', FRAMES); process.exit(1); }
-            console.log('timeline ok:', FRAMES, 'frames,', DURATION, 's');
+            import { FRAMES, DURATION, FPS, N_SCENES } from './src/beat/timeline.js';
+            const expect = Math.round(DURATION * FPS);
+            if (FRAMES !== expect) {
+              console.error('FRAMES', FRAMES, '!= round(DURATION*FPS)', expect);
+              process.exit(1);
+            }
+            if (!Number.isInteger(N_SCENES) || N_SCENES < 1) {
+              console.error('bad N_SCENES', N_SCENES); process.exit(1);
+            }
+            console.log('timeline ok:', N_SCENES, 'panels,', FRAMES, 'frames,', DURATION, 's @', FPS, 'fps');
           "
 
       - name: Publish
