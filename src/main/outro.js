@@ -10,13 +10,25 @@ import {
 } from '../beat/timeline.js';
 import { smoothstep, smootherstep, lerp, easeInOut, easeOutBack, clamp } from '../kit/math.js';
 
-export const COLS = 7, ROWS = 3;
-export const N_CELLS = N_SCENES + 1;              // 20 panels + the press seat
+// 24 panels divide exactly into 8 x 3, so the wall fills completely and the
+// press seat sits BELOW it — the same composition as the original 20-panel cut,
+// where the seat was also a row below the wall. Cramming 24 panels + a seat into
+// a fixed 7x3 grid (21 cells) left the last four cells at row 3, past the end of
+// T_ROW: T_ROW[r] came back undefined, k became NaN, and those panels vanished.
+export const COLS = 8, ROWS = 3;
+export const N_CELLS = N_SCENES + 1;              // N panels on the wall + the press seat
 export const PRESS = N_SCENES;                    // cell index of the press seat
 const GP = 1200;                                  // wall pitch (panel + gap)
 const ROW_LAST_Y = PANEL / 2;                     // the bottom row stays at the scroll height
-// panel 20 (cell 19, bottom row, column 5) stays where the story left it
-const ANCHOR_X = panelLeft(N_SCENES - 1) + PANEL / 2 - 2 * GP;   // x of the middle column
+const MID_COL = (COLS - 1) / 2;                   // 3.5: eight columns have no integer centre
+const LAST_COL = (N_SCENES - 1) % COLS;
+// The seat gets its own row well below the wall: at one pitch below (the old
+// position) an eight-column wall zooms out further, which lifts the seat on
+// screen until it collides with the closing caption.
+const SEAT_Y = ROW_LAST_Y + GP * 1.35;
+// The last panel must not jump when the wall forms, so the grid is anchored on
+// it: wallC(N_SCENES-1).x === stripC(N_SCENES-1).x.
+const ANCHOR_X = panelLeft(N_SCENES - 1) + PANEL / 2 - (LAST_COL - MID_COL) * GP;
 
 export const T_PULL = OUTRO_START;                // 125: pull back starts
 export const T_STRIP = OUTRO_START + 1.2;         // whole scroll visible
@@ -36,8 +48,9 @@ export const LAST_FRAME_T = (Math.round(DURATION * FPS) - 1) / FPS;
 const stripC = (i) => [panelLeft(i) + PANEL / 2, CAMERA_Y];
 /** Wall centre of cell i. */
 export const wallC = (i) => {
+  if (i === PRESS) return [ANCHOR_X, SEAT_Y];
   const col = i % COLS, row = Math.floor(i / COLS);
-  return [ANCHOR_X + (col - 3) * GP, ROW_LAST_Y + (row - (ROWS - 1)) * GP];
+  return [ANCHOR_X + (col - MID_COL) * GP, ROW_LAST_Y + (row - (ROWS - 1)) * GP];
 };
 
 /** Centre of cell i at time t (world units), its fold progress k, and whether it is in place. */

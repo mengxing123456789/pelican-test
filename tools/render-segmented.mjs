@@ -67,11 +67,25 @@ for (let start = from; start <= to; start += SEG) {
   const segFile = path.join(segDir, `seg_${String(start).padStart(5, '0')}.mp4`);
   segments.push(segFile);
 
+  // Skip a block that a previous run already finished. Only the encode is
+  // skipped, and only when the file is real (non-zero); the segment still goes
+  // into `segments`, so the concatenation at the end covers the whole film.
+  // Without this, resuming an interrupted run with --from 6400 would concatenate
+  // just the tail and quietly produce a two-minute film.
+  if (a['skip-existing'] && fs.existsSync(segFile) && fs.statSync(segFile).size > 0) {
+    console.log(`[frames ${start}] blocks ${start}..${end} — already done, skipping`);
+    continue;
+  }
+
   console.log(`[frames ${start}] blocks ${start}..${end} (${end - start + 1})`);
 
   // 1. render this block
+  //
+  // --resume is always on: frames are deleted after each block, so for a normal
+  // run it costs nothing, but after an interrupted run it re-renders only the
+  // frames that never landed instead of the whole block.
   run('node', ['tools/render.mjs', '--from', String(start), '--to', String(end),
-    '--workers', String(a.workers || 6), '--out', 'frames'], 'render');
+    '--workers', String(a.workers || 6), '--resume', '--out', 'frames'], 'render');
 
   // 2. verify what actually landed before trusting it
   const expected = end - start + 1;
