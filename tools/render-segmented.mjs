@@ -118,10 +118,28 @@ const silent = path.join(tmpDir, 'film_silent.mp4');
 run('ffmpeg', ['-y', '-f', 'concat', '-safe', '0', '-i', listFile, '-c', 'copy', silent], 'concat');
 
 // 6. mux the score
+//
+// No -shortest. With a concatenated video input it truncated the audio: the
+// delivered file declared 161 s but carried 134 s of samples, losing exactly
+// one segment's worth. Explicit -map and no -shortest keeps both streams whole;
+// if their lengths ever disagree, check-sync reports it instead of silently
+// dropping the tail.
 if (fs.existsSync(wav)) {
   run('ffmpeg', ['-y', '-i', silent, '-i', wav,
-    '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', '-shortest',
+    '-map', '0:v:0', '-map', '1:a:0',
+    '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k',
     '-movflags', '+faststart', outFile], 'mux audio');
+
+  // verify the mux kept the whole score
+  const probe = spawnSync('ffprobe', ['-v', 'error', '-select_streams', 'a:0',
+    '-show_entries', 'stream=duration', '-of', 'csv=p=0', outFile], { encoding: 'utf8' });
+  const aDur = parseFloat((probe.stdout || '0').trim());
+  if (Math.abs(aDur - DURATION) > 0.5) {
+    console.error(`  WARNING: audio is ${aDur.toFixed(2)} s but the film is ${DURATION} s`);
+    console.error('  run `node tools/check-sync.mjs` before publishing');
+  } else {
+    console.log(`  audio: ${aDur.toFixed(2)} s (film ${DURATION} s)`);
+  }
 } else {
   fs.copyFileSync(silent, outFile);
   console.log('  no audio/mix.wav found — wrote a silent film');

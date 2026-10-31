@@ -1,6 +1,6 @@
 {
   "name": "@mengxing123456789/pelican-test",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "The Pelican Test — a procedurally generated film: a pelican chases a drawing through 24 eras of art, every frame drawn and scored by code",
   "keywords": [
     "procedural-art",
@@ -38,6 +38,7 @@
     "cover": "node tools/cover.mjs",
     "check": "node tools/check.mjs",
     "check:frames": "node tools/check-frames.mjs",
+    "check:sync": "node tools/check-sync.mjs",
     "render:segmented": "node tools/render-segmented.mjs",
     "preview": "node tools/preview-strip.mjs",
     "build": "node tools/audio.mjs && node tools/render-segmented.mjs",
