@@ -20,7 +20,13 @@ const wav = a.audio ? path.resolve(ROOT, a.audio) : path.resolve(ROOT, 'audio/mi
 const useAudio = !a['no-audio'] && fs.existsSync(wav) && (!draft || a.audio);
 fs.mkdirSync(path.dirname(out), { recursive: true });
 
-const args = ['-y', '-loglevel', 'error', '-stats', '-framerate', String(FPS), '-i', pattern];
+// `--start` lets a frame RANGE be encoded on its own. ffmpeg's image2 demuxer
+// otherwise starts looking at index 0 and reports "could find no file or
+// sequence" for a block that begins at f02410.png. Segmented rendering needs
+// exactly that.
+const startNumber = Number(a.start || 0);
+const args = ['-y', '-loglevel', 'error', '-stats', '-framerate', String(FPS),
+  '-start_number', String(startNumber), '-i', pattern];
 if (useAudio) args.push('-i', wav);
 args.push(
   '-vf', 'scale=out_color_matrix=bt709:out_range=tv,format=yuv420p,setparams=color_primaries=bt709:color_trc=bt709:colorspace=bt709:range=tv',

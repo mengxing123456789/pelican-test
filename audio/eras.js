@@ -385,4 +385,51 @@ export const ERAS = {
     E.on('complete', (b) => chord(E, V.marimba, E.bus.hall, b, 4, [50, 57, 62, 66, 69, 74], 0.6));
     E.on('toast', (b) => E.play(V.toast, E.bus.room, b, 0.5, 93, 0.6));
   },
+
+  // ---------------------------------------------------------------------------
+  // v2 additions. Each picks instruments that belong to the tradition rather
+  // than reusing a neighbour's palette:
+  //
+  //   islamic   — plucked strings over a steady frame drum; no voice, because
+  //               this panel's subject is a rule rather than a figure
+  //   byzantine — organ and bell: the sound of a stone room with gold in it
+  //   mask      — carved wood: slit drum and shakers, no pitched melody at all
+  //   bauhaus   — tuned percussion plus a mechanical tick; construction, not
+  //               expression
+  // ---------------------------------------------------------------------------
+
+  islamic(E) {
+    E.melody(V.harp, E.bus.room, { vel: 0.55, transpose: 2 });
+    E.melody(V.sitar, E.bus.hall, { vel: 0.28, transpose: -5 });
+    each(0, 12, 1, (b) => E.play(b % 2 ? V.dha : V.frame, E.bus.input, b, 0.3, 60, b % 4 ? 0.5 : 0.8));
+    each(0.5, 12, 1, (b) => E.play(V.ghungroo, E.bus.input, b, 0.12, 60, 0.32));
+    // the pattern settles one tile per bar
+    each(0, 12, 4, (b) => chord(E, V.harp, E.bus.hall, b, 3, [50, 57, 62], 0.28));
+  },
+
+  byzantine(E) {
+    E.melody(V.organ, E.bus.hall, { vel: 0.45 });
+    E.melody(V.chant, E.bus.hall, { vel: 0.22, transpose: -12 });
+    each(0, 12, 4, (b) => chord(E, V.organ, E.bus.hall, b, 4, [46, 53, 58, 62], 0.35));
+    // a bell on each bar, the way a service is marked
+    each(0, 12, 4, (b) => E.play(V.bianzhong, E.bus.hall, b, 0.6, 62, 0.28));
+    each(2, 12, 4, (b) => E.play(V.pengling, E.bus.room, b, 0.4, 81, 0.18));
+  },
+
+  mask(E) {
+    // Deliberately unpitched: a mask is a carved object, not a song.
+    each(0, 12, 1, (b) => E.play(V.slit, E.bus.input, b, 0.3, 60, b % 2 ? 0.5 : 0.9));
+    each(0.5, 12, 1, (b) => E.play(V.rattle, E.bus.input, b, 0.15, 60, 0.4));
+    each(0, 12, 2, (b) => E.play(V.frame, E.bus.input, b, 0.5, 60, 0.7));
+    E.melody(V.conch, E.bus.hall, { vel: 0.28, transpose: -7 });
+  },
+
+  bauhaus(E) {
+    E.melody(V.marimba, E.bus.room, { vel: 0.6, transpose: 1 });
+    const roots = ROOTS[E.phrase];
+    roots.forEach((r, k) => chord(E, V.pad, E.bus.hall, k * 4, 3, triad(r + 12, r < 57), 0.3));
+    // the tick is the metronome of a construction: no swing, no rubato
+    each(0, 12, 0.5, (b) => E.play(V.muyu, E.bus.input, b, 0.06, 60, b % 4 === 0 ? 0.5 : 0.2));
+    each(0, 12, 2, (b) => E.play(V.marimba, E.bus.room, b, 0.4, 74 + (b % 4) * 2, 0.35));
+  },
 };
