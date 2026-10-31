@@ -1,7 +1,7 @@
 // Default "pen line" rendering of the placed rig (book-plate / neutral style).
 // It is also the reference for scene styles: walk rigParts(P) back → front and
 // map each part's ROLE to your era's palette and technique.
-import { brush } from '../kit/brush.js';
+import { brush, flush } from '../kit/brush.js';
 import { seed } from '../kit/seed.js';
 import { rigParts } from './parts.js';
 
@@ -32,24 +32,27 @@ export function drawPen(P, opts = {}) {
   // otherwise produces. The Byzantine panel uses it to gild the figure; the
   // Islamic panel uses it to punch the figure out of the tilework as a hole.
   const fillInk = opts.fillInk ?? null;
+  // v2: outline only, no fills at all. `color: false` normally forces every
+  // filled part to white, which silently painted over a figure that had already
+  // been drawn underneath. Scenes that draw their own silhouette pass this so
+  // drawPen contributes the keyline and nothing else.
+  const strokeOnly = opts.strokeOnly === true;
   const farInk = '#7d736a';
 
   for (const part of rigParts(P)) {
     if (part.layer === 'far' && opts.far === false) continue;
     const [fillC0, wf, inkC0] = COLOR_STYLE[part.role] || [null, 1];
-    let fillC = fillC0 === 'ink' ? ink : fillC0;
-    if (fillInk && fillC) fillC = fillInk;
-    else if (!col && fillC && fillC !== ink) fillC = part.layer === 'far' ? '#e9e4dc' : '#ffffff';
-    if (!col && !fillInk && (part.role === 'nail' || part.role === 'face')) continue;
-    const inkC = inkC0 === 'far' ? farInk : col && inkC0 ? inkC0 : ink;
-    const w = wf * W;
+    let fillC = strokeOnly ? null : (fillC0 === 'ink' ? ink : fillC0);
 
-    seed(key, part.name, 'f');
-    // OPAQUE fill path for fillInk. brush.wash() is a translucent watercolour:
-    // against a dark ground it all but vanishes, which is why the punched-out
-    // hole in the tilework and the gold mosaic figure both failed to show up.
-    // p5's own fill is flat and opaque, which is what those two panels need.
-    if (fillInk && fillC) {
+    // ---- v2: the fillInk path -------------------------------------------
+    // Deliberately does NOT go through brush at all. p5.brush composites its
+    // strokes through a shader at flush time, and that pass replaced the flat
+    // colour underneath — which is why four attempts at "fill, then stroke"
+    // all came out as an outline. Here the silhouette is drawn with p5's own
+    // fill and the part is then stroked with a plain p5 line, so no brush
+    // compositing can overwrite it.
+    if (fillInk) {
+      const inkC = ink;
       push();
       noStroke();
       fill(fillInk);
@@ -59,8 +62,27 @@ export function drawPen(P, opts = {}) {
         for (const [px, py] of part.pts) vertex(px, py);
         endShape(CLOSE);
       }
+      if (W > 0) {
+        noFill();
+        stroke(inkC);
+        strokeWeight(wf * W);
+        if (part.kind === 'circle') circle(part.c[0], part.c[1], part.r * 2);
+        else if (part.kind === 'poly') {
+          beginShape();
+          for (const [px, py] of part.pts) vertex(px, py);
+          endShape(CLOSE);
+        }
+      }
       pop();
+      continue;
     }
+
+    if (!col && fillC && fillC !== ink) fillC = part.layer === 'far' ? '#e9e4dc' : '#ffffff';
+    if (!col && (part.role === 'nail' || part.role === 'face')) continue;
+    const inkC = inkC0 === 'far' ? farInk : col && inkC0 ? inkC0 : ink;
+    const w = wf * W;
+
+    seed(key, part.name, 'f');
     if (part.kind === 'circle') {
       if (fillC) { brush.noStroke(); brush.wash(fillC, 255); brush.circle(part.c[0], part.c[1], part.r); brush.noWash(); }
       if (w > 0) { seed(key, part.name, 'o'); brush.noFill(); brush.set(bn, inkC, w); brush.circle(part.c[0], part.c[1], part.r); }

@@ -7,3 +7,4 @@ tiles/
 audio/*.wav
 .DS_Store
 ._*
+_probe*.mjs

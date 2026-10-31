@@ -151,69 +151,85 @@ export default {
       rect(0, k * 72, 1000, 72);
     }
 
-    // ---- the bicycle, seen head on, wobbling --------------------------
-    // One ellipse (the wheel edge-on) and a fork, tilting with a slow sine.
+    // The whole rider is built at 1.5x and hung off one anchor. At 1x the
+    // figure read as a small brown stick in the middle of a lot of black; a
+    // mask is a head, and a head has to be a substantial part of the frame.
+    const SC = 1.5;
     const lean = Math.sin(u * 2.4) * 0.11;
     const bobY = Math.sin(u * 4.8) * 5;
-    const hubY = ROAD_Y - 96;
+    const wheelBottom = ROAD_Y;
+    const hubY = wheelBottom - 84 * SC;
+
+    push();
+    // One scale wraps the entire rider, so every part grows together and the
+    // proportions stay as designed. Scaling each piece separately is what made
+    // the earlier attempts drift apart.
+    translate(500, wheelBottom);
+    scale(SC);
+    translate(-500, -wheelBottom);
 
     push();
     translate(500, hubY + bobY);
     rotate(lean);
 
-    // the wheel, edge-on: one narrow ellipse
+    // tyre and rim
     noFill();
     stroke(232, 220, 196, 210);
     strokeWeight(13);
-    ellipse(0, 96, 34, 168);
+    ellipse(0, 0, 34, 168);
     stroke(255, 246, 224, 120);
     strokeWeight(3);
-    ellipse(0, 96, 34, 168);
+    ellipse(0, 0, 34, 168);
 
-    // fork and bars
+    // the fork: rises from the hub to the bars, closing the gap that used to
+    // leave the body floating above the wheel
     stroke(214, 198, 170, 190);
     strokeWeight(9);
-    line(0, 10, 0, -58);
-    line(-30, -66, 30, -66);
+    line(0, -8, 0, -74);
+    line(-30, -80, 30, -80);
     pop();
 
-    // ---- the body between the mask and the bars ----------------------
-    // Without this the mask floats. A short carved neck and shoulders tie the
-    // face to the vehicle, so the panel reads as one rider rather than a mask
-    // hovering over a wheel.
+    // ---- the body: continuous from the wheel to the mask --------------
+    // The first version placed the wheel at hubY+96, the body at hubY-96 and
+    // the mask at hubY-148: three pieces 190 units apart, which read as three
+    // separate objects. Everything now hangs off one anchor and overlaps.
     push();
-    translate(500, hubY + bobY);
+    translate(500, hubY + bobY - 74);
     rotate(lean * 0.55);
     noStroke();
-    // shoulders: a trapezoid, wide at the bottom
+    // shoulders: a trapezoid, wide at the bottom, sitting on the fork
     fill(WOOD_MID[0], WOOD_MID[1], WOOD_MID[2]);
     beginShape();
-    vertex(-58, -96);
-    vertex(58, -96);
-    vertex(44, -34);
-    vertex(-44, -34);
+    vertex(-52, -6);
+    vertex(52, -6);
+    vertex(40, 58);
+    vertex(-40, 58);
     endShape(CLOSE);
     // a darker cut down the middle, so the shoulders are two planes
     fill(WOOD_DARK[0], WOOD_DARK[1], WOOD_DARK[2], 200);
-    rect(-3, -96, 6, 62);
-    // neck
+    rect(-3, -6, 6, 64);
+    // neck, rising out of the shoulders
     fill(WOOD_LIGHT[0], WOOD_LIGHT[1], WOOD_LIGHT[2]);
-    rect(-17, -150, 34, 60);
+    rect(-16, -74, 32, 72);
     pop();
 
     // ---- the mask, on top of it ---------------------------------------
-    // Proportions matter here: at first the mask was 150 wide against a 116-wide
-    // body and the three pieces read as separate objects. The head is now
-    // slightly WIDER than the shoulders (a mask is the whole head) and overlaps
-    // the neck, so the silhouette is continuous.
-    const MASK_W = 132;
-    const maskScale = MASK_W / this.maskBox.w;
-    const maskH = this.maskBox.w * maskScale;
+    // The carved layer is a full 1200x1200 square and the face occupies the
+    // middle ~440 of it. Scaling by maskBox.w (440) therefore blew the face up
+    // past the frame; the scale has to be relative to the LAYER, with the face
+    // kept in proportion by the factor 440/1200.
+    const MASK_W = 96;                        // drawn face width, panel units
+    const LAYER = 1200;                       // the carved layer's pixel size
+    const faceW = 440;                        // how much of it the face fills
+    const spriteW = MASK_W * (LAYER / faceW);
+    const spriteH = spriteW;                  // the layer is square
     push();
-    translate(500, hubY + bobY - 148);
+    translate(500, hubY + bobY - 74 - 60);
     rotate(lean * 0.75);
-    image(this.mask, -MASK_W / 2, -maskH, MASK_W, maskH);
+    image(this.mask, -spriteW / 2, -spriteH * 0.60, spriteW, spriteH);
     pop();
+
+    pop();   // the rider's overall scale
 
     // ---- dust, kicked up by the wobble --------------------------------
     const rr = rng(`mask-dust-${Math.floor(u * 10)}`);

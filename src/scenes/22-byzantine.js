@@ -133,12 +133,32 @@ export default {
     // ---- the imperial pelican, in gold --------------------------------
     if (ctx.rider && ctx.rider.visible) {
       const placed = ctx.rider.placed;
-      // fillInk makes the silhouette itself gold. Without it, drawPen's
-      // `color:false` path forces every fill to white, and the figure stays a
-      // white cut-out no matter what `ink` is set to.
-      K.rig.drawPen(placed, { key: 'byz:rider-gold', color: false, ink: '#3a2418', fillInk: '#d8ac4a', weight: 1.8 });
-      // dark keyline, the way mosaic figures are outlined
-      K.rig.drawPen(placed, { key: 'byz:rider-ink', color: false, ink: '#3a2418', weight: 1.0, alpha: 215 });
+
+      // Drawn WITHOUT drawPen. Five attempts at routing a flat colour through
+      // drawPen all failed — the brush pipeline composites through a shader at
+      // flush and the flat fill simply was not on the canvas (measured: the
+      // body pixel came back as the background colour). Drawing the silhouette
+      // here, with p5's own path API and the same rig parts, is the version
+      // that actually puts gold on screen.
+      push();
+      noStroke();
+      fill('#d8ac4a');
+      for (const part of K.rig.parts(placed)) {
+        if (part.layer === 'far') continue;
+        if (part.kind === 'poly') {
+          beginShape();
+          for (const [px, py] of part.pts) vertex(px, py);
+          endShape(CLOSE);
+        } else if (part.kind === 'circle') {
+          circle(part.c[0], part.c[1], part.r * 2);
+        }
+      }
+      pop();
+
+      // The keyline. `strokeOnly` is essential here: drawPen's `color: false`
+      // path fills every part with white, which is what kept painting over the
+      // gold in the five earlier attempts.
+      K.rig.drawPen(placed, { key: 'byz:rider-ink', color: false, ink: '#3a2418', weight: 0.9, alpha: 215, strokeOnly: true });
 
       // nimbus: a gold ring, drawn in short radial ticks so it reads as tesserae
       push();

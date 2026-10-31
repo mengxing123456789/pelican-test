@@ -1,6 +1,6 @@
 {
   "name": "@mengxing123456789/pelican-test",
-  "version": "2.1.0-dev",
+  "version": "2.1.1-dev",
   "description": "The Pelican Test — a procedurally generated film: a pelican chases a drawing through 24 eras of art, every frame drawn and scored by code",
   "keywords": [
     "procedural-art",
