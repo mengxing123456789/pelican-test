@@ -6,7 +6,7 @@
 >
 > *The wind took a drawing, and something went after it.*
 
-**版本 2.2.2** · 全程序化生成的短片：一只鹈鹕追一张被风吹走的画，穿过 **24 个**时代的画。
+**版本 2.2.3** · 全程序化生成的短片：一只鹈鹕追一张被风吹走的画，穿过 **24 个**时代的画。
 每穿过一道画框，世界换一种画法，那张画也被重新画一遍。
 
 **片中没有一张手绘图，也没有一秒录音**——每一帧由 p5.js + p5.brush 算出，每一个音符由 Web Audio 合成。
@@ -21,7 +21,7 @@
 | 时长 | 161 秒（24 格，已渲染成片） |
 | 帧数 | 9660 |
 | 分辨率 / 帧率 | 1920×1080 @ 60 fps |
-| 当前版本 | `2.2.2` · 见 [CHANGELOG.md](CHANGELOG.md) |
+| 当前版本 | `2.2.3` · 见 [CHANGELOG.md](CHANGELOG.md) |
 
 ---
 
@@ -32,7 +32,7 @@
 | **先看看是什么** | 往下读本页，或直接看 [Releases](https://github.com/mengxing123456789/pelican-test/releases) 里的成片 |
 | **把片子跑起来** | [§5 怎么跑起来](#5-怎么跑起来) —— 注意要用分段渲染，不是 `npm run render` |
 | **理解它是怎么做的** | [§1 当前架构](#1-当前架构) · [§4 设计](#4-设计它是怎么工作的) |
-| **改代码前** | [docs/MEMORY.md](docs/MEMORY.md) —— 九个会静默失败的坑，踩过才知道 |
+| **改代码前** | [docs/MEMORY.md](docs/MEMORY.md) —— 十一个会静默失败的坑，踩过才知道 |
 | **弄清来源与创作边界** | [docs/PROVENANCE.md](docs/PROVENANCE.md) —— 原作是谁的、v2 改了什么、凭什么说同源 |
 | **看每版改了什么** | [CHANGELOG.md](CHANGELOG.md) |
 | **当 npm 包用** | [docs/using-as-a-package.md](docs/using-as-a-package.md) |
