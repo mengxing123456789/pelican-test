@@ -140,7 +140,7 @@ tools/
 | 配乐离线渲染 | 161 s 配乐约 **520–565 s** | `tools/audio.mjs` 计时 |
 | 全片 PNG 体积 | 单帧均值 **3.1 MB**，全片约 **29 GB** | 采样 + 分段实测 |
 | 分段渲染峰值磁盘 | 单段 1600 帧约 **5 GB** | 分段流程实测 |
-| 成片体积 | **333 MB** / 161 s / 9660 帧 | `ffprobe` |
+| 成片体积 | **392 MB** / 161 s / 9660 帧 | `ffprobe` |
 | 积分响度 | **−19.4 LUFS**（自动标定目标），真峰值 −1.1 dBFS | `tools/levels.mjs` + `ebur128` |
 | 各格电平 | 24 格经自动标定至同一目标 | 逐格 RMS 计算 |
 
@@ -334,7 +334,7 @@ v1 = [RoyceBella-commits/The-Pelican-Test](https://github.com/RoyceBella-commits
 
 | 类别 | 改动 |
 |---|---|
-| **成片** | 24 格版首次渲染完成：9660 帧 / 161.02 s / 333 MB |
+| **成片** | 24 格版渲染完成：9660 帧 / 161.00 s / 392 MB（v2.2.3 重渲） |
 | **配乐** | 补上四个新格的编配（原先这 24 秒是静音）；逐格响度自动标定 |
 | **工具** | 分段渲染 `render-segmented.mjs`、预览图 `preview-strip.mjs`、帧核验 `check-frames.mjs` |
 | **修复** | `encode.mjs` 缺 `-start_number`；段文件名递增导致覆盖丢帧 |
